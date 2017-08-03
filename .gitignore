@@ -1,0 +1,34 @@
+# ignore results 
+*.csv
+*.mat
+
+# ignore symbolic links
+*.egg-info
+
+# ignore compiled python files
+*.pyc
+
+# ignore logging files
+*.log
+
+# ignore generated dymola files
+buildlog.txt
+dsfinal.txt
+dsin.txt
+dslog.txt
+dsmodel*
+dymosim*
+
+# ignore matlab dumping file
+*.mdmp
+
+# ignore spyder project
+.spyderproject
+.spyproject
+
+# ignore pycharm files
+.idea
+__pycache__
+
+# ignore jupyter notebook files
+.ipynb_checkpoints
