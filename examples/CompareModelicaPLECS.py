@@ -1,21 +1,23 @@
-from ReadTools import *
-from PlotTools import *
+from dataprocessing.readtools import *
+from dataprocessing.plottools import *
 import matplotlib.pyplot as plt
 import numpy as np
 
+results_path = r'\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\InductionMachine\results'
+
 ### --- Read in section --- ###
 # Stator currents
-stator_currents_mo = read_time_series_Modelica(r'\\tsclient\N\Diss\jdi\Documents\MachineModeling\results\Modelica3hpMachine.mat', ['inductionMachineSquirrelCage.i[1]', 'inductionMachineSquirrelCage.i[2]', 'inductionMachineSquirrelCage.i[3]'])
-stator_currents_pls = read_time_series_PLECS(r'\\tsclient\N\Diss\jdi\Documents\MachineModeling\results\PLECS3hpMachineStatorCurrents.csv')
+stator_currents_mo = read_time_series_Modelica(results_path + r'\Modelica3hpMachineRRFs.mat', ['inductionMachineSquirrelCage.i[1]', 'inductionMachineSquirrelCage.i[2]', 'inductionMachineSquirrelCage.i[3]'])
+stator_currents_pls = read_time_series_PLECS(results_path + r'\PLECS3hpMachineStatorCurrents.csv')
 
 # Rotor currents
-rotor_currents_mo = read_time_series_Modelica(r'\\tsclient\N\Diss\jdi\Documents\MachineModeling\results\Modelica3hpMachine.mat', ['inductionMachineSquirrelCage.i_qd0r[1]', 'inductionMachineSquirrelCage.i_qd0r[2]'])
-rotor_currents_pls = read_time_series_PLECS(r'\\tsclient\N\Diss\jdi\Documents\MachineModeling\results\PLECS3hpMachineRotorCurrentsDqRRFs.csv')
+rotor_currents_mo = read_time_series_Modelica(results_path + r'\Modelica3hpMachineRRFs.mat', ['inductionMachineSquirrelCage.i_qd0r[1]', 'inductionMachineSquirrelCage.i_qd0r[2]'])
+rotor_currents_pls = read_time_series_PLECS(results_path + r'\PLECS3hpMachineRotorCurrentsDqRRFs.csv')
 rotor_currents_pls[1].values = -rotor_currents_pls[1].values # transformation DQ0->QD0
 
 # Torque and speed
-torque_speed_mo = read_time_series_Modelica(r'\\tsclient\N\Diss\jdi\Documents\MachineModeling\results\Modelica3hpMachine.mat', ['inductionMachineSquirrelCage.T_e', 'inductionMachineSquirrelCage.omega_rm'])
-torque_speed_pls = read_time_series_PLECS(r'\\tsclient\N\Diss\jdi\Documents\MachineModeling\results\PLECS3hpMachineTorqueSpeed.csv')
+torque_speed_mo = read_time_series_Modelica(results_path + r'\Modelica3hpMachineRRFs.mat', ['inductionMachineSquirrelCage.T_e', 'inductionMachineSquirrelCage.omega_rm'])
+torque_speed_pls = read_time_series_PLECS(results_path + r'\PLECS3hpMachineTorqueSpeed.csv')
 torque_speed_mo[1].values = torque_speed_mo[1].values/2/np.pi*60 # transformation to r/min
 
 ### --- Plot section --- ###
