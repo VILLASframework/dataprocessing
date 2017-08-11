@@ -22,21 +22,26 @@ def plot_dpsim_abs_diff(filename1, node1, filename2, node2):
 
     # this assumes same timestep for both simulations
     ts_abs1 = complex_abs('node ' + str(node1) + 'abs', ts_dpsim1[node1], ts_dpsim1[node1 + im_offset1])
+    ts_abs1 = scale_ts(ts_abs1.name, ts_abs1, 0.001)
     ts_abs1.label = 'reference'
     ts_abs2 = complex_abs('node ' + str(node2) + 'abs', ts_dpsim2[node1], ts_dpsim2[node1 + im_offset2])
+    ts_abs2 = scale_ts(ts_abs2.name, ts_abs2, 0.001)
     ts_abs2.label = 'local co-sim'
     ts_diff = diff('diff', ts_abs1, ts_abs2)
     ts_diff.label = 'difference'
 
     figure_id = 1
-    plt.figure(figure_id)
+    #plt.figure(figure_id)
+    plt.figure(figure_id, figsize=(12 / 2.54, 6 / 2.54), facecolor='w', edgecolor='k')
     plot_single_ts(figure_id, ts_abs1)
     plot_single_ts(figure_id, ts_abs2)
     plot_single_ts(figure_id, ts_diff)
     plt.xlabel('Time [s]')
-    plt.ylabel('Voltage [V]')
+    plt.ylabel('Voltage [kV]')
     plt.grid(True)
+    plt.tight_layout()
     plt.show()
+
 
 def plot_dpsim_abs_single(filename, node):
     ts_dpsim = read_time_series_DPsim(filename)

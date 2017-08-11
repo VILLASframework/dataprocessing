@@ -9,6 +9,13 @@ def diff(name, ts1, ts2):
     ts_diff = TimeSeries(name, ts1.time, (ts1.values - ts2.values))
     return ts_diff
 
+def scale_ts(name, ts, factor):
+    """ Scale timeseries.
+    Assumes the same time steps for both timeseries.
+    """
+    ts_scaled = TimeSeries(name, ts.time, ts.values * factor)
+    return ts_scaled
+
 def complex_abs(name, real, imag):
     """ Calculate absolute value of complex variable.
     Assumes the same time steps for both timeseries.
