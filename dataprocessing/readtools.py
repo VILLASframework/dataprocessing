@@ -33,7 +33,7 @@ def read_time_series_PLECS(filename, time_series_names=None):
 
 def read_time_series_DPsim(filename, time_series_names=None):
     pd_df = pd.read_csv(filename, header=None)
-    time_series = []
+    timeseries_list = []
 
     if time_series_names is None:
         # No trajectory names specified, thus read in all
@@ -44,13 +44,18 @@ def read_time_series_DPsim(filename, time_series_names=None):
         for column in column_names:
             if node_index <= node_number:
                 node_name = node_index
-                time_series.append(TimeSeries('node '+ str(node_name) +' Re', pd_df.iloc[:,0], pd_df.iloc[:,column]))
+                timeseries_list.append(TimeSeries('node '+ str(node_name) +' Re', pd_df.iloc[:,0], pd_df.iloc[:,column]))
             else:
                 node_name = node_index - node_number
-                time_series.append(TimeSeries('node '+ str(node_name) +' Im', pd_df.iloc[:,0], pd_df.iloc[:,column]))
+                timeseries_list.append(TimeSeries('node '+ str(node_name) +' Im', pd_df.iloc[:,0], pd_df.iloc[:,column]))
 
             node_index = node_index + 1
     else:
         # Read in specified time series
         print('no column names specified yet')
-    return time_series
+
+    print('DPsim results file length:')
+    print(len(timeseries_list))
+    for result in timeseries_list:
+        print(result.name)
+    return timeseries_list
