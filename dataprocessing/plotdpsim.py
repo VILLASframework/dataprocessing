@@ -1,10 +1,11 @@
 from .readtools import *
 from .plottools import *
 from .calc import *
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.rcParams.update({'font.size': 8})
 
-
-def plot_dpsim_abs_diff(filename1, node1, filename2, node2):
+def plot_dpsim_abs_diff(filename1, label1, node1, filename2, label2, node2):
     ts_dpsim1 = read_time_series_DPsim(filename1)
     ts_dpsim2 = read_time_series_DPsim(filename2)
 
@@ -23,10 +24,10 @@ def plot_dpsim_abs_diff(filename1, node1, filename2, node2):
     # this assumes same timestep for both simulations
     ts_abs1 = complex_abs('node ' + str(node1) + 'abs', ts_dpsim1[node1], ts_dpsim1[node1 + im_offset1])
     ts_abs1 = scale_ts(ts_abs1.name, ts_abs1, 0.001)
-    ts_abs1.label = 'reference'
+    ts_abs1.label = label1
     ts_abs2 = complex_abs('node ' + str(node2) + 'abs', ts_dpsim2[node1], ts_dpsim2[node1 + im_offset2])
     ts_abs2 = scale_ts(ts_abs2.name, ts_abs2, 0.001)
-    ts_abs2.label = 'local co-sim'
+    ts_abs2.label = label2
     ts_diff = diff('diff', ts_abs1, ts_abs2)
     ts_diff.label = 'difference'
 
