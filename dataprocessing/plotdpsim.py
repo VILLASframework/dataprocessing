@@ -89,11 +89,11 @@ def plot_dpsim_abs_single(filename, node):
         print(result.name)
 
     im_offset = int(ts_dpsim_length / 2)
-    if im_offset <= node1 or node1 < 0:
+    if im_offset <= node or node < 0:
         print('Node 1 not available')
         exit()
 
-    abs1 = complex_abs('node ' + str(node1) + 'abs', ts_dpsim[node1], ts_dpsim[node1 + im_offset])
+    abs1 = complex_abs('node ' + str(node) + 'abs', ts_dpsim[node], ts_dpsim[node + im_offset])
     abs1.label = 'absolute'
 
     figure_id = 1
