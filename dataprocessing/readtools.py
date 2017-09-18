@@ -2,40 +2,60 @@ import numpy as np
 import pandas as pd
 from .timeseries import *
 
-def read_time_series_Modelica(filename, time_series_names=None):
+def read_timeseries_Modelica(filename, timeseries_names=None):
     from modelicares import SimRes
     sim = SimRes(filename)
-    times_series = []
-    if time_series_names is None:
+    timeseries_list = []
+    if timeseries_names is None:
         # No trajectory names specified, thus read in all
         print('TBD')
     else:
         # Read in specified time series
-        for name in time_series_names:
-            times_series.append(TimeSeries(name, sim(name).times(), sim(name).values()))
-    return times_series
+        for name in timeseries_names:
+            timeseries_list.append(TimeSeries(name, sim(name).times(), sim(name).values()))
+    return timeseries_list
 
 
-def read_time_series_PLECS(filename, time_series_names=None):
+def read_timeseries_PLECS(filename, timeseries_names=None):
     pd_df = pd.read_csv(filename)
-    times_series = []
-    if time_series_names is None:
+    timeseries_list = []
+    if timeseries_names is None:
         # No trajectory names specified, thus read in all
-        time_series_names = list(pd_df.columns.values)
-        time_series_names.remove('Time')
-        for name in time_series_names:
-            times_series.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
+        timeseries_names = list(pd_df.columns.values)
+        timeseries_names.remove('Time')
+        for name in timeseries_names:
+            timeseries_list.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
     else:
         # Read in specified time series
-        for name in time_series_names:
-            times_series.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
-    return times_series
+        for name in timeseries_names:
+            timeseries_list.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
+    return timeseries_list
 
-def read_time_series_DPsim(filename, time_series_names=None):
+def read_timeseries_DPsim(filename, timeseries_names=None):
+    pd_df = pd.read_csv(filename)
+    timeseries_list = []
+
+    if timeseries_names is None:
+        # No trajectory names specified, thus read in all
+        timeseries_names = list(pd_df.columns.values)
+        timeseries_names.remove('Time')
+        for name in timeseries_names:
+            timeseries_list.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
+    else:
+        # Read in specified time series
+        print('no column names specified yet')
+
+    print('DPsim results file length:')
+    print(len(timeseries_list))
+    for result in timeseries_list:
+        print(result.name)
+    return timeseries_list
+
+def read_timeseries_DPsim_node_values(filename, timeseries_names=None):
     pd_df = pd.read_csv(filename, header=None)
     timeseries_list = []
 
-    if time_series_names is None:
+    if timeseries_names is None:
         # No trajectory names specified, thus read in all
         column_names = list(pd_df.columns.values)
         column_names.remove(0)
