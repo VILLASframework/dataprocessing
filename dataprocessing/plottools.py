@@ -9,7 +9,7 @@ def plot_timeseries(figure_id, timeseries, plt_linestyle='-'):
     if not isinstance(timeseries, list):
         plt.plot(timeseries.time, timeseries.values, linestyle=plt_linestyle, label=timeseries.label)
         plt.gca().autoscale(axis='x', tight=True)
-        plt.legend()
+        plt.legend(loc='lower right')
     else:
         for ts in timeseries:
             plt.subplot(len(timeseries), 1, timeseries.index(ts) + 1)

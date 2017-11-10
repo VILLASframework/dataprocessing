@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size': 8})
 
 def plot_dpsim_abs_diff(filename1, label1, node1, filename2, label2, node2):
-    ts_dpsim1 = read_time_series_DPsim(filename1)
-    ts_dpsim2 = read_time_series_DPsim(filename2)
+    ts_dpsim1 = read_timeseries_DPsim(filename1)
+    ts_dpsim2 = read_timeseries_DPsim(filename2)
 
     ts_dpsim1_length = len(ts_dpsim1)
     im_offset1 = int(ts_dpsim1_length / 2)
@@ -44,8 +44,8 @@ def plot_dpsim_abs_diff(filename1, label1, node1, filename2, label2, node2):
     plt.show()
 
 def plot_dpsim_abs(filename1, label1, node1, filename2, label2, node2):
-        ts_dpsim1 = read_time_series_DPsim(filename1)
-        ts_dpsim2 = read_time_series_DPsim(filename2)
+        ts_dpsim1 = read_timeseries_DPsim(filename1)
+        ts_dpsim2 = read_timeseries_DPsim(filename2)
 
         ts_dpsim1_length = len(ts_dpsim1)
         im_offset1 = int(ts_dpsim1_length / 2)
@@ -79,8 +79,47 @@ def plot_dpsim_abs(filename1, label1, node1, filename2, label2, node2):
         plt.show()
 
 
+def plot_dpsim_emt_abs(filenameDP, nodeDP, filenameEMT, nodeEMT):
+    ts_dpsimDP = read_timeseries_DPsim(filenameDP)
+    ts_dpsimEMT = read_timeseries_DPsim(filenameEMT)
+
+    ts_dpsimDP_length = len(ts_dpsimDP)
+    im_offsetDP = int(ts_dpsimDP_length / 2)
+    if im_offsetDP <= nodeDP or nodeDP < 0:
+        print('Node DP not available')
+        exit()
+
+    ts_dpsimEMT_length = len(ts_dpsimEMT)
+    if ts_dpsimEMT_length <= nodeEMT or nodeEMT < 0:
+        print('Node EMT not available')
+        exit()
+
+    ts_absDP = complex_abs('node ' + str(nodeDP) + 'abs', ts_dpsimDP[nodeDP], ts_dpsimDP[nodeDP + im_offsetDP])
+    ts_absDP = scale_ts(ts_absDP.name, ts_absDP, 0.001)
+    ts_absDP.label = 'DP abs'
+
+    ts_shiftDP = dyn_phasor_shift_to_emt('node ' + str(nodeDP) + 'shift', ts_dpsimDP[nodeDP], ts_dpsimDP[nodeDP + im_offsetDP], 50)
+    ts_shiftDP = scale_ts(ts_shiftDP.name, ts_shiftDP, 0.001)
+    ts_shiftDP.label = 'DP shift'
+
+    ts_EMT = TimeSeries('node ' + str(nodeEMT), ts_dpsimEMT[nodeEMT].time, ts_dpsimEMT[nodeEMT].values)
+    ts_EMT = scale_ts(ts_EMT.name, ts_EMT, 0.001)
+    ts_EMT.label = 'EMT'
+
+    figure_id = 1
+    # plt.figure(figure_id)
+    plt.figure(figure_id, figsize=(12 / 2.54, 6 / 2.54), facecolor='w', edgecolor='k')
+    plot_timeseries(figure_id, ts_EMT)
+    plot_timeseries(figure_id, ts_absDP)
+    plot_timeseries(figure_id, ts_shiftDP)
+    plt.xlabel('Time [s]')
+    plt.ylabel('Voltage [kV]')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
 def plot_dpsim_abs_single(filename, node):
-    ts_dpsim = read_time_series_DPsim(filename)
+    ts_dpsim = read_timeseries_DPsim(filename)
 
     ts_dpsim_length = len(ts_dpsim)
     print('DPsim results file length:')
