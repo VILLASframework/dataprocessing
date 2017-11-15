@@ -2,18 +2,22 @@ import numpy as np
 import pandas as pd
 from .timeseries import *
 
+
 def read_timeseries_Modelica(filename, timeseries_names=None):
     from modelicares import SimRes
     sim = SimRes(filename)
-    timeseries_list = []
     if timeseries_names is None:
         # No trajectory names specified, thus read in all
         print('TBD')
     else:
         # Read in specified time series
-        for name in timeseries_names:
-            timeseries_list.append(TimeSeries(name, sim(name).times(), sim(name).values()))
-    return timeseries_list
+        if not isinstance(timeseries_names, list):
+            timeseries = TimeSeries(timeseries_names, sim(timeseries_names).times(), sim(timeseries_names).values())
+        else:
+            for name in timeseries_names:
+                timeseries = []
+                timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
+    return timeseries
 
 
 def read_timeseries_PLECS(filename, timeseries_names=None):
