@@ -1,4 +1,5 @@
 import numpy as np
+import cmath
 
 class TimeSeries:
     """Stores data from different simulation sources.
@@ -44,19 +45,23 @@ class TimeSeries:
         return ts_abs
 
     def abs(self, name):
-        """ Calculate absolute value of complex variable.
-        Assumes the same time steps for both timeseries.
+        """ Calculate absolute value of complex time series.
         """
-        ts_abs = TimeSeries(name, self.time, self.values.abs())
+        abs_values = []
+        for value in self.values:
+            abs_values.append(np.abs(value))
+        ts_abs = TimeSeries(name, self.time, abs_values)
         return ts_abs
 
-    def complex_phase(name, ts_real, ts_imag):
-        """ Calculate absolute value of complex variable.
-        Assumes the same time steps for both timeseries.
+    def phase(self, name):
+        """ Calculate absolute value of complex time series.
         """
-        ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
-        ts_abs = TimeSeries(name, ts_real.time, ts_complex.phase())
-        return ts_abs
+        phase_values = []
+        for value in self.values:
+            phase_values.append(np.angle(value, deg=True))
+        ts_abs = TimeSeries(name, self.time, phase_values)
+        ts_phase = TimeSeries(name, self.time, phase_values)
+        return ts_phase
 
     @staticmethod
     def dyn_phasor_shift_to_emt(name, real, imag, freq):

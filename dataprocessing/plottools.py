@@ -20,3 +20,5 @@ def plot_timeseries(figure_id, timeseries, plt_linestyle='-'):
 def set_time_series_labels(timeseries_list, time_series_labels):
     for ts in timeseries_list:
         ts.label = time_series_labels[timeseries_list.index(ts)]
+
+
