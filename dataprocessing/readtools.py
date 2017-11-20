@@ -14,8 +14,8 @@ def read_timeseries_Modelica(filename, timeseries_names=None):
         if not isinstance(timeseries_names, list):
             timeseries = TimeSeries(timeseries_names, sim(timeseries_names).times(), sim(timeseries_names).values())
         else:
+            timeseries = []
             for name in timeseries_names:
-                timeseries = []
                 timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
     return timeseries
 
