@@ -14,9 +14,14 @@ class TimeSeries:
     @staticmethod
     def diff(name, ts1, ts2):
         """Returns difference between values of two Timeseries objects.
-        Assumes the same time steps for both timeseries.
         """
-        ts_diff = TimeSeries(name, ts1.time, (ts1.values - ts2.values))
+        if ts1.time==ts2.time:
+            ts_diff = TimeSeries(name, ts1.time, (ts1.values - ts2.values))
+        else:  # different timestamps, common time vector and interpolation required before substraction
+            time = sorted(set(list(ts1.time) + list(ts2.time)))
+            interp_vals_ts1 = np.interp(time, ts1.time, ts1.values)
+            interp_vals_ts2 = np.interp(time, ts2.time, ts2.values)
+            ts_diff = TimeSeries(name, time, (interp_vals_ts2 - interp_vals_ts1))
         return ts_diff
 
 
