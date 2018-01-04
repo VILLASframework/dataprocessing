@@ -84,14 +84,17 @@ def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
     :param timeseries_names: column name which should be read
     :return: list of Timeseries objects
     """
-    pd_df = pd.read_csv(filename, header=None)
+    pd_df = pd.read_csv(filename)
     timeseries_list = []
 
     if timeseries_names is None:
         # No trajectory names specified, thus read in all
+        pd_df.rename(columns=lambda x: x.strip(), inplace=True)
         column_names = list(pd_df.columns.values)
+        print(column_names)
         # Remove timestamps column name and store separately
-        column_names.remove(0)
+        column_names.remove('time')
+        print(column_names)
         timestamps = pd_df.iloc[:,0]
         # Calculate number of network nodes since array is [real, imag]
         node_number = int(len(column_names) / 2)
@@ -99,7 +102,7 @@ def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
         for column in column_names:
             if node_index <= node_number:
                 ts_name = 'node '+ str(node_index)
-                timeseries_list.append(TimeSeries(ts_name, timestamps, np.vectorize(complex)(pd_df.iloc[:,column],pd_df.iloc[:,column + node_number])))
+                timeseries_list.append(TimeSeries(ts_name, timestamps, np.vectorize(complex)(pd_df.iloc[:,node_index],pd_df.iloc[:,node_index + node_number])))
             else:
                 break
             node_index = node_index + 1
