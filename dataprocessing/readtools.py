@@ -1,14 +1,25 @@
 import numpy as np
 import pandas as pd
 from .timeseries import *
+import re
 
 
-def read_timeseries_Modelica(filename, timeseries_names=None):
+def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
     from modelicares import SimRes
     sim = SimRes(filename)
-    if timeseries_names is None:
-        # No trajectory names specified, thus read in all
-        print('TBD')
+    if timeseries_names is None and is_regex is False:
+        # No trajectory names or regex specified, thus read in all
+        timeseries = []
+        for name in sim.names():
+            timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
+    elif is_regex is True:
+        # Read in variables which match with regex
+        timeseries = []
+        p = re.compile(timeseries_names)
+        timeseries_names = [name for name in sim.names() if p.search(name)]
+        timeseries_names.sort()
+        for name in timeseries_names:
+            timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
     else:
         # Read in specified time series
         if not isinstance(timeseries_names, list):
