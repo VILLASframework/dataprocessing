@@ -46,46 +46,35 @@ def read_timeseries_PLECS(filename, timeseries_names=None):
             timeseries_list.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
     return timeseries_list
 
-def read_timeseries_dpsim_real(filename, header=None, timeseries_names=None):
+def read_timeseries_dpsim_real(filename, timeseries_names=None):
     """Reads real time series data from DPsim log file which may have a header.
     Timeseries names are assigned according to the header names if available.
     :param filename: name of the csv file that has the data
-    :param header: specifies if the log file has a header
     :param timeseries_names: column names which should be read
     :return: list of Timeseries objects
     """
     timeseries_list = []
-
-    if header is True:
-        pd_df = pd.read_csv(filename)
-    else:
-        pd_df = pd.read_csv(filename, header=None)
+    pd_df = pd.read_csv(filename)
 
     if timeseries_names is None:
-        # No trajectory names specified, thus read in all
+        # No column names specified, thus read in all and strip spaces
+        pd_df.rename(columns=lambda x: x.strip(), inplace=True)
         column_names = list(pd_df.columns.values)
+
+        print('DPsim results column names: ' + str(column_names))
+        print('DPsim results number: ' + str(len(timeseries_list)))
+
         # Remove timestamps column name and store separately
-        column_names.remove(0)
+        column_names.remove('time')
         timestamps = pd_df.iloc[:,0]
 
         if header is True:
             for name in column_names:
                 timeseries_list.append(TimeSeries(name, timestamps, pd_df[name].values))
-        else:
-            node_number = int(len(column_names))
-            node_index = 1
-            for column in column_names:
-                ts_name = 'node ' + str(node_index)
-                timeseries_list.append(TimeSeries(ts_name, timestamps, pd_df.iloc[:, column]))
-                node_index = node_index + 1
     else:
         # Read in specified time series
         print('no column names specified yet')
 
-    print('DPsim results file length:')
-    print(len(timeseries_list))
-    for result in timeseries_list:
-        print(result.name)
     return timeseries_list
 
 def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
@@ -99,21 +88,24 @@ def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
     timeseries_list = []
 
     if timeseries_names is None:
-        # No trajectory names specified, thus read in all
+        # No column names specified, thus read in all and strip off spaces
         pd_df.rename(columns=lambda x: x.strip(), inplace=True)
         column_names = list(pd_df.columns.values)
-        print(column_names)
+
+        print('DPsim results column names: ' + str(column_names))
+        print('DPsim results number: ' + str(len(timeseries_list)))
+
         # Remove timestamps column name and store separately
         column_names.remove('time')
-        print(column_names)
         timestamps = pd_df.iloc[:,0]
         # Calculate number of network nodes since array is [real, imag]
         node_number = int(len(column_names) / 2)
         node_index = 1
         for column in column_names:
             if node_index <= node_number:
-                ts_name = 'node '+ str(node_index)
-                timeseries_list.append(TimeSeries(ts_name, timestamps, np.vectorize(complex)(pd_df.iloc[:,node_index],pd_df.iloc[:,node_index + node_number])))
+                ts_name = 'n'+ str(node_index)
+                timeseries_list.append(
+                TimeSeries(ts_name, timestamps, np.vectorize(complex)(pd_df.iloc[:,node_index],pd_df.iloc[:,node_index + node_number])))
             else:
                 break
             node_index = node_index + 1
@@ -121,10 +113,6 @@ def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
         # Read in specified time series
         print('cannot read specified columns yet')
 
-    print('DPsim results file length:')
-    print(len(timeseries_list))
-    for result in timeseries_list:
-        print(result.name)
     return timeseries_list
 
 def read_timeseries_dpsim_cmpl_separate(filename, timeseries_names=None):
