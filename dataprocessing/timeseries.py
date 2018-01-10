@@ -61,6 +61,19 @@ class TimeSeries:
                               - self.values.imag*np.sin(2*np.pi*freq*self.time))
         return ts_shift
 
+    def interpolate_cmpl(self, name, timestep):
+        """ Not tested yet!
+        Interpolates complex timeseries with timestep
+        :param name:
+        :param timestep:
+        :return:
+        """
+        interpl_time = np.arange(self.time[0], self.time[-1], timestep)
+        realValues = interp1d(interpl_time, self.values.real)
+        imagValues = interp1d(interpl_time, self.values.imag)
+        ts_return = TimeSeries(name, time, np.vectorize(complex)(realValues, imagValues))
+        return timeseries
+
     @staticmethod
     def sep_dynphasor_shift_to_emt(name, real, imag, freq):
         """ Shift dynamic phasor values to EMT by frequency freq.
