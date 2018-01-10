@@ -3,7 +3,7 @@ import numpy as np
 from .timeseries import *
 
 
-def plot_timeseries(figure_id, timeseries, plt_linestyle='-', plt_linewidth=2, plt_color=None):
+def plot_timeseries(figure_id, timeseries, plt_linestyle='-', plt_linewidth=2, plt_color=None, plt_legend_loc='lower right'):
     """
     This function plots either a single timeseries or several timeseries in the figure defined by figure_id.
     Several timeseries (handed over in a list) are plotted in several subplots.
@@ -16,7 +16,7 @@ def plot_timeseries(figure_id, timeseries, plt_linestyle='-', plt_linewidth=2, p
         else:
             plt.plot(timeseries.time, timeseries.values, linestyle=plt_linestyle, label=timeseries.label, linewidth=plt_linewidth)
         plt.gca().autoscale(axis='x', tight=True)
-        plt.legend(loc='lower right')
+        plt.legend(loc=plt_legend_loc)
     else:
         for ts in timeseries:
             plt.subplot(len(timeseries), 1, timeseries.index(ts) + 1)
