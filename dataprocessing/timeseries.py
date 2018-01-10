@@ -11,35 +11,12 @@ class TimeSeries:
         self.name = name
         self.label = name
 
-    @staticmethod
-    def diff(name, ts1, ts2):
-        """Returns difference between values of two Timeseries objects.
-        """
-        if ts1.time==ts2.time:
-            ts_diff = TimeSeries(name, ts1.time, (ts1.values - ts2.values))
-        else:  # different timestamps, common time vector and interpolation required before substraction
-            time = sorted(set(list(ts1.time) + list(ts2.time)))
-            interp_vals_ts1 = np.interp(time, ts1.time, ts1.values)
-            interp_vals_ts2 = np.interp(time, ts2.time, ts2.values)
-            ts_diff = TimeSeries(name, time, (interp_vals_ts2 - interp_vals_ts1))
-        return ts_diff
-
-
-    def scale_ts(self, name, factor):
+    def scale(self, name, factor):
         """Returns scaled timeseries.
         Assumes the same time steps for both timeseries.
         """
         ts_scaled = TimeSeries(name, self.time, self.values * factor)
         return ts_scaled
-
-    @staticmethod
-    def complex_abs(name, ts_real, ts_imag):
-        """ Calculate absolute value of complex variable.
-        Assumes the same time steps for both timeseries.
-        """
-        ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
-        ts_abs = TimeSeries(name, ts_real.time, ts_complex.abs())
-        return ts_abs
 
     def abs(self, name):
         """ Calculate absolute value of complex time series.
@@ -61,18 +38,49 @@ class TimeSeries:
         return ts_phase
 
     @staticmethod
-    def dyn_phasor_shift_to_emt(name, real, imag, freq):
+    def diff(name, ts1, ts2):
+        """Returns difference between values of two Timeseries objects.
+        """
+        if ts1.time==ts2.time:
+            ts_diff = TimeSeries(name, ts1.time, (ts1.values - ts2.values))
+        else:  # different timestamps, common time vector and interpolation required before substraction
+            time = sorted(set(list(ts1.time) + list(ts2.time)))
+            interp_vals_ts1 = np.interp(time, ts1.time, ts1.values)
+            interp_vals_ts2 = np.interp(time, ts2.time, ts2.values)
+            ts_diff = TimeSeries(name, time, (interp_vals_ts2 - interp_vals_ts1))
+        return ts_diff
+
+    def dynphasor_shift_to_emt(self, name, freq):
         """ Shift dynamic phasor values to EMT by frequency freq.
             Assumes the same time steps for both timeseries.
+        :param name: name of returned time series
+        :param freq: shift frequency
+        :return: new timeseries with shifted time domain values
         """
-        ts_shift = TimeSeries(name, real.time, real.values*np.cos(2*np.pi*freq*real.time) - imag.values*np.sin(2*np.pi*freq*real.time))
+        ts_shift = TimeSeries(name, self.time, self.values.real*np.cos(2*np.pi*freq*self.time)
+                              - self.values.imag*np.sin(2*np.pi*freq*self.time))
         return ts_shift
 
     @staticmethod
-    def check_node_number_comp(ts_comp, node):
+    def sep_dynphasor_shift_to_emt(name, real, imag, freq):
+        """ Shift dynamic phasor values to EMT by frequency freq.
+            Assumes the same time steps for both timeseries.
+        :param name: name of returned time series
+        :param real: timeseries with real values
+        :param imag: timeseries with imaginary values
+        :param freq: shift frequency
+        :return: new timeseries with shifted time domain values
+        """
+        ts_shift = TimeSeries(name, real.time,
+                              real.values * np.cos(2 * np.pi * freq * real.time) - imag.values * np.sin(
+                                  2 * np.pi * freq * real.time))
+        return ts_shift
+
+    @staticmethod
+    def check_node_number_comp(ts_list_comp, node):
         """
         Check if node number is available in complex time series.
-        :param ts_comp: complex time series
+        :param ts_comp: complex time series list
         :param node: node number to be checked
         :return: true if node number is available, false if out of range
         """
@@ -85,10 +93,10 @@ class TimeSeries:
             return true
 
     @staticmethod
-    def check_node_number(ts, node):
+    def check_node_number(ts_list, node):
         """
         Check if node number is available in time series.
-        :param ts: time series
+        :param ts: time series list
         :param node: node number to be checked
         :return: true if node number is available, false if out of range
         """
@@ -98,3 +106,12 @@ class TimeSeries:
             return false
         else:
             return true
+
+    @staticmethod
+    def complex_abs(name, ts_real, ts_imag):
+        """ Calculate absolute value of complex variable.
+        Assumes the same time steps for both timeseries.
+        """
+        ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
+        ts_abs = TimeSeries(name, ts_real.time, ts_complex.abs())
+        return ts_abs
