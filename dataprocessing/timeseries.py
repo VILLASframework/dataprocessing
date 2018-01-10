@@ -33,14 +33,6 @@ class TimeSeries:
         return ts_scaled
 
     @staticmethod
-    def complex_abs_dep(name, ts_real, ts_imag):
-        """ Calculate absolute value of complex variable.
-        Assumes the same time steps for both timeseries.
-        """
-        ts_abs = TimeSeries(name, ts_real.time, np.sqrt(ts_real.values ** 2 + ts_imag.values ** 2))
-        return ts_abs
-
-    @staticmethod
     def complex_abs(name, ts_real, ts_imag):
         """ Calculate absolute value of complex variable.
         Assumes the same time steps for both timeseries.
