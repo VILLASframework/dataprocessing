@@ -28,6 +28,10 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
             timeseries = []
             for name in timeseries_names:
                 timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
+
+    print('Modelica results column names: ' + str(timeseries_names))
+    print('Modelica results number: ' + str(len(timeseries_list)))
+
     return timeseries
 
 
@@ -44,6 +48,10 @@ def read_timeseries_PLECS(filename, timeseries_names=None):
         # Read in specified time series
         for name in timeseries_names:
             timeseries_list.append(TimeSeries(name, pd_df['Time'].values, pd_df[name].values))
+
+    print('PLECS results column names: ' + str(timeseries_names))
+    print('PLECS results number: ' + str(len(timeseries_list)))
+
     return timeseries_list
 
 def read_timeseries_dpsim_real(filename, timeseries_names=None):
@@ -61,9 +69,6 @@ def read_timeseries_dpsim_real(filename, timeseries_names=None):
         pd_df.rename(columns=lambda x: x.strip(), inplace=True)
         column_names = list(pd_df.columns.values)
 
-        print('DPsim results column names: ' + str(column_names))
-        print('DPsim results number: ' + str(len(timeseries_list)))
-
         # Remove timestamps column name and store separately
         column_names.remove('time')
         timestamps = pd_df.iloc[:,0]
@@ -74,6 +79,9 @@ def read_timeseries_dpsim_real(filename, timeseries_names=None):
     else:
         # Read in specified time series
         print('no column names specified yet')
+
+    print('DPsim results column names: ' + str(column_names))
+    print('DPsim results number: ' + str(len(timeseries_list)))
 
     return timeseries_list
 
@@ -92,9 +100,6 @@ def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
         pd_df.rename(columns=lambda x: x.strip(), inplace=True)
         column_names = list(pd_df.columns.values)
 
-        print('DPsim results column names: ' + str(column_names))
-        print('DPsim results number: ' + str(len(timeseries_list)))
-
         # Remove timestamps column name and store separately
         column_names.remove('time')
         timestamps = pd_df.iloc[:,0]
@@ -112,6 +117,9 @@ def read_timeseries_dpsim_cmpl(filename, timeseries_names=None):
     else:
         # Read in specified time series
         print('cannot read specified columns yet')
+
+    print('DPsim results column names: ' + str(column_names))
+    print('DPsim results number: ' + str(len(timeseries_list)))
 
     return timeseries_list
 
