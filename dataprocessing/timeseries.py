@@ -47,7 +47,7 @@ class TimeSeries:
     def diff(name, ts1, ts2):
         """Returns difference between values of two Timeseries objects.
         """
-        if ts1.time==ts2.time:
+        if len(ts1.time) == len(ts2.time):
             ts_diff = TimeSeries(name, ts1.time, (ts1.values - ts2.values))
         else:  # different timestamps, common time vector and interpolation required before substraction
             time = sorted(set(list(ts1.time) + list(ts2.time)))
