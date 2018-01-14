@@ -38,6 +38,12 @@ class TimeSeries:
         return ts_phase
 
     @staticmethod
+    def rmse(ts1, ts2):
+        """ Calculate root mean square error between two time series
+        """
+        return np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())
+
+    @staticmethod
     def diff(name, ts1, ts2):
         """Returns difference between values of two Timeseries objects.
         """
