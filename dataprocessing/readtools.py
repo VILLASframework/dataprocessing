@@ -73,9 +73,8 @@ def read_timeseries_dpsim_real(filename, timeseries_names=None):
         column_names.remove('time')
         timestamps = pd_df.iloc[:,0]
 
-        if header is True:
-            for name in column_names:
-                timeseries_list.append(TimeSeries(name, timestamps, pd_df[name].values))
+        for name in column_names:
+            timeseries_list.append(TimeSeries(name, timestamps, pd_df[name].values))
     else:
         # Read in specified time series
         print('no column names specified yet')
