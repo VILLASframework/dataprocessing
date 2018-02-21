@@ -3,7 +3,6 @@ import pandas as pd
 from .timeseries import *
 import re
 
-
 def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
     from modelicares import SimRes
     sim = SimRes(filename)
@@ -12,6 +11,7 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
         timeseries = []
         for name in sim.names():
             timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
+        timeseries_names = sim.names()
     elif is_regex is True:
         # Read in variables which match with regex
         timeseries = []
@@ -30,7 +30,7 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
                 timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
 
     print('Modelica results column names: ' + str(timeseries_names))
-    print('Modelica results number: ' + str(len(timeseries_list)))
+    print('Modelica results number: ' + str(len(timeseries_names)))
 
     return timeseries
 

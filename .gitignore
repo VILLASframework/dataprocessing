@@ -4,6 +4,7 @@
 
 # ignore symbolic links
 *.egg-info
+*.eggs
 
 # ignore compiled python files
 *.pyc
