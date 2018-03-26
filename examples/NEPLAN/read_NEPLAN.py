@@ -56,4 +56,4 @@ def readsim(file_name,timeseries_names=None, is_regex=False):
                             timeseries.append(TimeSeries(nameindex[m], 0, value[m + 6]))
         flag = False
     str_tmp.close()
-    return dic
+    return timeseries
