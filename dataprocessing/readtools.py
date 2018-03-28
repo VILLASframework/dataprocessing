@@ -169,7 +169,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
     seq = []
     value = []
     i = 0
-    namelist = ['V', 'Vangel', 'P', 'Q', 'I', 'Iangle']
+    namelist = ['Vpp', 'Vangle', 'P', 'Q', 'I', 'Iangle']
     timeseries = []
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')
     for line in str_tmp.readlines():
