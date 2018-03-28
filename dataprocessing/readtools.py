@@ -161,6 +161,12 @@ def read_timeseries_dpsim_cmpl_separate(filename, timeseries_names=None):
         print(result.name)
     return timeseries_list
 
+import numpy as np
+import pandas as pd
+from dataprocessing.timeseries import *
+import re
+import cmath
+
 def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex = False):
     str_tmp = open(file_name, "r")  # Read in files
     low = 0
