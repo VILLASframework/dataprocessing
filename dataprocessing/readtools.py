@@ -161,13 +161,8 @@ def read_timeseries_dpsim_cmpl_separate(filename, timeseries_names=None):
         print(result.name)
     return timeseries_list
 
-import numpy as np
-import pandas as pd
-from dataprocessing.timeseries import *
-import re
-import cmath
 
-def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex = False):
+def read_timeseries_NEPLAN_loadflow1(file_name, timeseries_names = None, is_regex = False):
     str_tmp = open(file_name, "r")  # Read in files
     low = 0
     high = 0
@@ -175,7 +170,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
     seq = []
     value = []
     i = 0
-    namelist = ['Vpp', 'Vangle', 'P', 'Q', 'I', 'Iangle']
+    namelist = ['Vpp', 'Vangle', 'I', 'Iangle']
     timeseries = []
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')
     for line in str_tmp.readlines():
@@ -205,18 +200,18 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
                     timeseries.append(TimeSeries(value[1] + '.' + namelist[m], 0, value[m + 6]))
             else:
                 for check in range(len(timeseries) - 1):
-                    if timeseries[check].name == value[3] + '.' + namelist[4]:
+                    if timeseries[check].name == value[3] + '.' + namelist[2]:
                         check_pass = False  # Find current of the same component, Calculate the current using (r,tha)
                         result = cmath.rect(timeseries[check].values,
                                             timeseries[check + 1].values / 180 * cmath.pi) + cmath.rect(
                             value[10], value[11] / 180 * cmath.pi)
                         (timeseries[check].values, timeseries[check + 1].values) = cmath.polar(result)
                         #timeseries[check + 1].values = timeseries[check + 1].values / cmath.pi * 180
-                        timeseries[check - 1].values += value[9]
-                        timeseries[check - 2].values += value[8]
+                        #timeseries[check - 1].values += value[9]
+                        #timeseries[check - 2].values += value[8]
                 if check_pass:
-                    for m in range(2, 6):
-                        timeseries.append(TimeSeries(value[3] + '.' + namelist[m], 0, value[m + 6]))
+                    for m in range(2, 4):
+                        timeseries.append(TimeSeries(value[3] + '.' + namelist[m], 0, value[m + 8]))
         flag = False
     str_tmp.close()
     line_del = []
