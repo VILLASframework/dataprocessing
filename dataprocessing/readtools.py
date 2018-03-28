@@ -169,7 +169,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
     seq = []
     value = []
     i = 0
-    namelist = ['U', 'ANGLEU', 'P', 'Q', 'I', 'ANGLEI']
+    namelist = ['V', 'Vangel', 'P', 'Q', 'I', 'Iangle']
     timeseries = []
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')
     for line in str_tmp.readlines():
@@ -205,7 +205,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
                                             timeseries[check + 1].values / 180 * cmath.pi) + cmath.rect(
                             value[10], value[11] / 180 * cmath.pi)
                         (timeseries[check].values, timeseries[check + 1].values) = cmath.polar(result)
-                        timeseries[check + 1].values = timeseries[check + 1].values / cmath.pi * 180
+                        #timeseries[check + 1].values = timeseries[check + 1].values / cmath.pi * 180
                         timeseries[check - 1].values += value[9]
                         timeseries[check - 2].values += value[8]
                 if check_pass:
