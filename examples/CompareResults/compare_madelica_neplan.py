@@ -3,7 +3,7 @@
 import re
 
 from dataprocessing.readtools import *
-from readin import read_timeseries_NEPLAN_loadflow1
+
 file_Neplan = r"C:\Users\admin\Desktop\Load_read\WCSS\Load_flow_WCSS.rlf"
 file_Modelica = r"C:\Users\admin\Desktop\Load_read\WCSS.mat"
 result_neplan = read_timeseries_NEPLAN_loadflow1(file_Neplan)
