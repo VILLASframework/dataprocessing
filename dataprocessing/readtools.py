@@ -162,13 +162,15 @@ def read_timeseries_dpsim_cmpl_separate(filename, timeseries_names=None):
     return timeseries_list
 
 
-def read_timeseries_NEPLAN_loadflow1(file_name, timeseries_names = None, is_regex = False):
+def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex = False):
     str_tmp = open(file_name, "r")  # Read in files
-    low = 0
-    high = 0
-    flag = True
-    seq = []
-    value = []
+    low = 0  # flag for the start of a new data in str_cmp
+    high = 0  # flag for the end of this new data in str_cmp
+    flag = True  # To judge if this the first line of the file, which will be the names for the data type
+
+    # Read in data from result file of neplan
+    seq = []  # list for datatype names
+    value = []  # list for data
     i = 0
     namelist = ['Vpp', 'Vangle', 'I', 'Iangle']
     timeseries = []
@@ -178,27 +180,33 @@ def read_timeseries_NEPLAN_loadflow1(file_name, timeseries_names = None, is_rege
         high -= high
         low -= low
         del value[:]
+
         for letter in line:
-            if letter == "	" or letter == "\n":  # different data or end
-                if low is not high:  # not NONE
-                    if flag:  # seq
+            if letter == "	" or letter == "\n":  # different data( separated by '	') or end(/n)
+                if low is not high:  # low is high, no data read in
+                    if flag:  # first line of the file, list for datatype name
                         seq.append(line[low:high])
-                    else:  # value
+                    else:  # not first line of the file,list for data
                         if isfloat.match(line[low:high]):
                             value.append(float(line[low:high]))
                         else:
                             value.append(line[low:high])
-                else:  # NONE
+                else:  # no data for this datatype
                     value.append(r'#')  # No value, set as #
-                low = high + 1
+                low = high + 1  # refresh low flag
             high += 1
+
+        """
+        A typical load current in neplan has two parts from both end, so the calculation of the 
+        current is necessary, which is the function of this part
+        """
         if flag is False:
             i += 1
             check_pass = True  # Check for current of the same component
-            if value[0] == '0':
+            if value[0] == '0':  # value[0] == '0', the data is for BUS voltage
                 for m in range(2):
                     timeseries.append(TimeSeries(value[1] + '.' + namelist[m], 0, value[m + 6]))
-            else:
+            else:  # Looking for current data
                 for check in range(len(timeseries) - 1):
                     if timeseries[check].name == value[3] + '.' + namelist[2]:
                         check_pass = False  # Find current of the same component, Calculate the current using (r,tha)
@@ -206,11 +214,14 @@ def read_timeseries_NEPLAN_loadflow1(file_name, timeseries_names = None, is_rege
                                             timeseries[check + 1].values / 180 * cmath.pi) + cmath.rect(
                             value[10], value[11] / 180 * cmath.pi)
                         (timeseries[check].values, timeseries[check + 1].values) = cmath.polar(result)
+                        timeseries[check + 1].values = timeseries[check + 1].values/cmath.pi *180
                 if check_pass:
                     for m in range(2, 4):
                         timeseries.append(TimeSeries(value[3] + '.' + namelist[m], 0, value[m + 8]))
         flag = False
     str_tmp.close()
+
+
     line_del = []
     if is_regex is True:
     # Read in variables which match with regex
