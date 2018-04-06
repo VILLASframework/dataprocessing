@@ -67,6 +67,18 @@ class TimeSeries:
                               - self.values.imag*np.sin(2*np.pi*freq*self.time))
         return ts_shift
 
+    def calc_freq_spectrum(self):
+        """ Calculates frequency spectrum of the time series using FFT
+        :param name: name of returned time series
+        :param freq: shift frequency
+        :return: new timeseries with shifted time domain values
+        """
+        Ts = self.time[1]-self.time[0]
+        fft_values = np.fft.fft(self.values)
+        freqs_num = int(len(fft_values)/2)
+        fft_freqs = np.fft.fftfreq(len(fft_values),d=Ts)
+        return fft_freqs[:freqs_num], np.abs(fft_values[:freqs_num])/freqs_num
+
     def interpolate_cmpl(self, name, timestep):
         """ Not tested yet!
         Interpolates complex timeseries with timestep
