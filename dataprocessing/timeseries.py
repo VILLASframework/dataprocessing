@@ -144,5 +144,5 @@ class TimeSeries:
         Assumes the same time steps for both timeseries.
         """
         ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
-        ts_abs = TimeSeries(name, ts_real.time, ts_complex.abs())
+        ts_abs = TimeSeries(name, ts_real.time, np.absolute(ts_complex))
         return ts_abs
