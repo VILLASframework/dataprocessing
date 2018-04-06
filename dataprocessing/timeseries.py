@@ -44,6 +44,19 @@ class TimeSeries:
         return np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())
 
     @staticmethod
+    def norm_rmse(ts1, ts2):
+        """ Calculate root mean square error between two time series,
+        normalized using the mean value of both mean values of ts1 and ts2 
+        """
+        if np.mean(np.array(ts1.values.mean(),ts2.values.mean())) != 0:
+          nrmse = np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())/np.mean(np.array(ts1.values.mean(),ts2.values.mean()))
+          is_norm = True
+        else:
+          nrmse = np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())
+          is_norm = False
+        return (nrmse,is_norm)
+
+    @staticmethod
     def diff(name, ts1, ts2):
         """Returns difference between values of two Timeseries objects.
         """
