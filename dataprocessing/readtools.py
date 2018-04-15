@@ -174,6 +174,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
     i = 0
     namelist = ['Vpp', 'Vangle', 'I', 'Iangle']
     timeseries = []
+    line_del = [] # a list for the value to be deleted
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')
     for line in str_tmp.readlines():
         line = line.replace(",", ".")
@@ -184,7 +185,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
         for letter in line:
             if letter == "	" or letter == "\n":  # different data( separated by '	') or end(/n)
                 if low is not high:  # low is high, no data read in
-                    if flag:  # first line of the file, list for datatype name
+                    if flag:  # first line of the file, list for data-type name
                         seq.append(line[low:high])
                     else:  # not first line of the file,list for data
                         if isfloat.match(line[low:high]):
@@ -203,26 +204,22 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
         if flag is False:
             i += 1
             check_pass = True  # Check for current of the same component
-            if value[0] == '0':  # value[0] == '0', the data is for BUS voltage
+            if value[0] == '0':  # value[0] == '0', no current data to be expected
                 for m in range(2):
-                    timeseries.append(TimeSeries(value[1] + '.' + namelist[m], 0, value[m + 6]))
-            else:  # Looking for current data
+                    timeseries.append(TimeSeries(value[1] + '.' + namelist[m], np.array([0., 1.]), np.array([value[m + 6], value[m + 6]])))
+            else:
                 for check in range(len(timeseries) - 1):
                     if timeseries[check].name == value[3] + '.' + namelist[2]:
                         check_pass = False  # Find current of the same component, Calculate the current using (r,tha)
-                        result = cmath.rect(timeseries[check].values,
-                                            timeseries[check + 1].values / 180 * cmath.pi) + cmath.rect(
-                            value[10], value[11] / 180 * cmath.pi)
-                        (timeseries[check].values, timeseries[check + 1].values) = cmath.polar(result)
-                        timeseries[check + 1].values = timeseries[check + 1].values/cmath.pi *180
+                        line_del.append(check)
                 if check_pass:
                     for m in range(2, 4):
-                        timeseries.append(TimeSeries(value[3] + '.' + namelist[m], 0, value[m + 8]))
+                        timeseries.append(TimeSeries(value[3] + '.' + namelist[m], np.array([0., 1.]), np.array([value[m + 8], value[m + 8]])))
         flag = False
     str_tmp.close()
 
 
-    line_del = []
+
     if is_regex is True:
     # Read in variables which match with regex
         p = re.compile(timeseries_names)
@@ -231,7 +228,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
             if p.search(timeseries[rule_check].name):
                 pass
             else:
-                line_del.append(rule_check);
+                line_del.append(rule_check)
 
     elif timeseries_names is not None:
     # Read in specified time series
@@ -240,7 +237,9 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names = None, is_regex
             if timeseries_names == timeseries[rule_check].name:
                 pass
             else:
-                line_del.append(rule_check);
+                line_del.append(rule_check)
+    line_del = set(line_del)
+    line_del = sorted(line_del)
     for num_to_del in range(len(line_del)):
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
     return timeseries
