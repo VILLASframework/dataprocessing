@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .timeseries import *
+from timeseries import *
 import re
 import cmath
 
@@ -30,8 +30,8 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
             for name in timeseries_names:
                 timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
 
-    print('Modelica results column names: ' + str(timeseries_names))
-    print('Modelica results number: ' + str(len(timeseries_names)))
+    #print('Modelica results column names: ' + str(timeseries_names))
+    #print('Modelica results number: ' + str(len(timeseries_names)))
 
     return timeseries
 
