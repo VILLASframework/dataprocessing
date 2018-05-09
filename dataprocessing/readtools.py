@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from timeseries import *
+from dataprocessing.timeseries import *
 import re
 import cmath
 

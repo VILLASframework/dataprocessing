@@ -3,15 +3,14 @@
 import re
 import os
 import sys
-sys.path.append(r'/home/cafi/Desktop/data-processing/dataprocessing')
-from readtools import *
+from dataprocessing.readtools import *
 
 
 def compare_modelica_neplan(Net_Name):  # compare the result file from NEPLAN and Modelica
     # Read in original nepaln result file
-    file_Neplan = os.path.abspath("/home/cafi/Desktop/" + Net_Name + "/" + Net_Name + ".rlf")
+    file_Neplan = os.path.abspath(Net_Name + "/" + Net_Name + ".rlf")
     # Read in original Modelica result file
-    file_Modelica = os.path.abspath("/home/cafi/Desktop/" + Net_Name + "/" + Net_Name + ".mat")
+    file_Modelica = os.path.abspath(Net_Name + "/" + Net_Name + ".mat")
     result_neplan = read_timeseries_NEPLAN_loadflow(file_Neplan)
     result_modelica = read_timeseries_Modelica(file_Modelica)
 
@@ -53,7 +52,7 @@ def assert_modelia_neplan_results(net_name):  # Assert the model using the funct
         else:
             print("Test on %s Passed" % name)
     if len(fail_list) is 0:
-        print("\033[1;36;40mModel Passed\033[0m")
+        print("\033[1;36;40mModel %s Passed\033[0m" % net_name)
     else:
         for name in fail_list:
             print("\033[1;31;40mTest on %s Failed\033[0m" % name)
