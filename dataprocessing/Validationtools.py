@@ -8,9 +8,9 @@ from dataprocessing.readtools import *
 
 def compare_modelica_neplan(Net_Name):  # compare the result file from NEPLAN and Modelica
     # Read in original nepaln result file
-    file_Neplan = os.path.abspath(Net_Name + "/" + Net_Name + ".rlf")
+    file_Neplan = os.path.abspath(os.path.abspath(os.path.join(os.getcwd(), ".."))+"/reference-results/Neplan/BasicGrids/" + Net_Name + ".rlf")
     # Read in original Modelica result file
-    file_Modelica = os.path.abspath(Net_Name + "/" + Net_Name + ".mat")
+    file_Modelica = os.path.abspath(os.path.abspath(os.path.join(os.getcwd(), "..")) + "/reference-results/Modelica/BasicGrids/" + Net_Name + ".mat")
     result_neplan = read_timeseries_NEPLAN_loadflow(file_Neplan)
     result_modelica = read_timeseries_Modelica(file_Modelica)
 
