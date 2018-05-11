@@ -12,7 +12,8 @@ def compare_modelica_neplan(Net_Name):  # compare the result file from NEPLAN an
     # Read in original Modelica result file
     file_Modelica = os.path.abspath("reference-results/Modelica/BasicGrids/" + Net_Name + ".mat")
     result_neplan = read_timeseries_NEPLAN_loadflow(file_Neplan)
-    result_modelica = read_timeseries_Modelica(file_Modelica)
+    print("Test on read in modelica")
+    result_modelica = read_timeseries_Modelica("reference-results/Modelica/BasicGrids/Slack_Rxline_PQLoad.mat")
 
     list_del = []
     for i in range(len(result_neplan)):
