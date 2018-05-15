@@ -8,8 +8,5 @@ print("Test Start")
 # We need to extract all the result files from git now
 for files in os.listdir(
         os.path.abspath("reference-results/Neplan/BasicGrids")):
-    if os.path.splitext(files)[0] == "Slack_Rxline_PQLoad":
-        pass
-    else:
         assert_modelia_neplan_results(os.path.splitext(files)[0]) #  Assert the result, model result path read from cmd line
 print("Test End")
