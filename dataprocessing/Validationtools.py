@@ -55,7 +55,8 @@ def assert_modelia_neplan_results(net_name):  # Assert the model using the funct
         print("\033[1;36;40mModel %s Passed\033[0m" % net_name)
     else:
         for name in fail_list:
-            print("\033[1;31;40mTest on %s Failed\033[0m" % name)
+            print("\033[1;31;40mTest on %s of %s Failed\033[0m" % (name,net_name))
+        raise ValueError('Test is not passed!')
 
 
 
