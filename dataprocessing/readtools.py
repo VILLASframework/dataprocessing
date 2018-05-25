@@ -166,6 +166,9 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     """
     Read in NEPLAN loadflow result from result file, the result is in angle notation, amplitude and angle are stored
     separately
+    To keep consistent with the names of voltage in most cases, the name of voltage variables are changed into '.V*'
+    instead of '.U*' as in the result file
+
     :param file_name: name of the mat file for the loadflow result from neplan
     :param timeseries_names: column name to be read
     :param is_regex: flag for using regular expression
@@ -174,24 +177,27 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     str_tmp = open(file_name, "r")  # Read in files
     low = 0  # flag for the start of a new data in str_cmp
     high = 0  # flag for the end of this new data in str_cmp
-    flag = True  # To judge if this the first line of the file, which will be the names for the data type
+    flag = True  # To judge if this is the first line of the file, which will be the names for the data type
 
     # Read in data from result file of neplan
     seq = []  # list for data type names
     value = []  # list for data
-    i = 0
-    namelist = ['Vpp', 'Vangle', 'I', 'Iangle']
+
+
+    namelist = ['U', 'ANGLEU', 'P', 'Q','I', 'ANGLEI']
     timeseries = []
     line_del = []  # a list for the value to be deleted
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')  # regular expression to find float values
+
+    # the ',' in the floats in result file to '.'
     for line in str_tmp.readlines():
         line = line.replace(",", ".")
         high -= high
         low -= low
         del value[:]
-
+        # read in different data and start processing
         for letter in line:
-            if letter == "	" or letter == "\n":  # different data( separated by '	') or end(/n)
+            if letter == "	" or letter == "\n":  # different data(separated by '	') or end(/n)
                 if low is not high:  # if low is equal to high, no data read in
                     if flag:  # first line of the file, list for data-type name
                         seq.append(line[low:high])
@@ -207,26 +213,18 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
 
         """
         A typical line current in neplan has two parts from both end, but we doesn't have to calculate them 
-        under the assumption that the topology of the gird should be correct with which we can validate the 
-        current by compare the voltage of the nodes connected to the ends of the line 
+        with the assumption that the topology of the gird should be correct with which we can validate the 
+        current by comparing the voltage of the nodes connected to the ends of the line 
         """
-        if flag is False:
-            i += 1
-            check_pass = True  # Check for current of the same component
-            if value[0] == '0':  # value[0] == '0', no current data to be expected
+        if flag is not True:
+            if value[3] is not '#':
+                for m in range(6):
+                    timeseries.append(TimeSeries(value[3] + '.' + namelist[m],
+                                                 np.array([0., 1.]), np.array([value[m + 6], value[m + 6]])))
+            else:
                 for m in range(2):
                     timeseries.append(TimeSeries(value[1] + '.' + namelist[m],
                                                  np.array([0., 1.]), np.array([value[m + 6], value[m + 6]])))
-            else:
-                for check in range(len(timeseries) - 1):
-                    if timeseries[check].name == value[3] + '.' + namelist[2]:
-                        # Find current of the same component, which means the current needn't to be validated
-                        check_pass = False
-                        line_del.append(check)  # delete the unnecessary data
-                        line_del.append(check + 1)
-                if check_pass:  # The load current
-                    for m in range(2, 4):
-                        timeseries.append(TimeSeries(value[3] + '.' + namelist[m], np.array([0., 1.]), np.array([value[m + 8], value[m + 8]])))
         flag = False
     str_tmp.close()
 
@@ -248,6 +246,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
                 pass
             else:
                 line_del.append(rule_check)
+    # delete those values that are not needed.
     line_del = set(line_del)
     line_del = sorted(line_del)
     for num_to_del in range(len(line_del)):
