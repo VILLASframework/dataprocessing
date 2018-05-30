@@ -3,7 +3,7 @@
 import os
 from dataprocessing.readtools import *
 
-def mapping_modcelica_neplan(neplan_timeseries):
+def convert_neplan_to_modelica_timeseries(neplan_timeseries):
     """
     Mapping the variable names between modelica and neplan
         - Voltage: change *.U and *.ANGLEU to *.V and *.Vangle
@@ -58,19 +58,18 @@ def compare_modelica_neplan(modelica_res, neplan_res):  # compare the result fil
     file_Neplan = os.path.abspath(neplan_res)
     # Read in original Modelica result file
     file_Modelica = os.path.abspath(modelica_res)
-    result_neplan = mapping_modcelica_neplan(read_timeseries_NEPLAN_loadflow(file_Neplan))
+    result_neplan = convert_neplan_to_modelica_timeseries(read_timeseries_NEPLAN_loadflow(file_Neplan))
     result_modelica = read_timeseries_Modelica(file_Modelica)
 
-    #  Unification of the variable names and units of the voltage and current
+    # Transfer the angle unit to degree
     for i in range(len(result_neplan)):
         result_neplan[i].name = result_neplan[i].name.upper()
         if 'ANGLE' in result_neplan[i].name:
-            result_neplan[i].values = result_neplan[i].values / cmath.pi * 180  # transfer the angle unit to degree
-    #  Unification of the units of the angle
+            result_neplan[i].values = result_neplan[i].values / cmath.pi * 180  
     for i in range(len(result_modelica)):
         result_modelica[i].name = result_modelica[i].name.upper()
         if 'ANGLE' in result_modelica[i].name:
-            result_modelica[i].values = result_modelica[i].values / cmath.pi * 180  # transfer the angle unit to degree
+            result_modelica[i].values = result_modelica[i].values / cmath.pi * 180
 
     timeseries_names = []  # list for names of components
     timeseries_error = []  # list for error
