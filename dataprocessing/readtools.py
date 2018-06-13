@@ -186,10 +186,8 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     """
     Read in NEPLAN loadflow result from result file, the result is in angle notation, amplitude and angle are stored
     separately
-    To keep consistent with the names of voltage in most cases, the name of voltage variables are changed into '.V*'
-    instead of '.U*' as in the result file
 
-    :param file_name: name of the mat file for the loadflow result from neplan
+    :param file_name: path of the mat file for the loadflow result from neplan
     :param timeseries_names: column name to be read
     :param is_regex: flag for using regular expression
     :return: list of Timeseries objects
@@ -274,6 +272,18 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     return timeseries
 
 def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex=False):
+    """
+    Read in simulink load-flow result from result file(.rep), the result is in angle notation, amplitude and angle are stored
+    separately.
+    A suffix is used to tag different data for a component:
+        .Arms/.IDegree for current/current angle,
+        .Vrms/.VDegree for voltage/voltage angle.
+
+    :param file_name:path of the .rep file for the loadflow result from simulink
+    :param timeseries_names: specific values to be read
+    :param is_regex: flag for using regular expression
+    :return: list of Timeseries objects
+    """
     str_tmp = open(file_name, 'r', encoding='latin-1')  # Read in files, using latin-1 to decode /xb0
 
     # Read in data from result file of neplan

@@ -114,7 +114,20 @@ def assert_modelia_neplan_results(net_name, modelica_res, neplan_res):  # Assert
         raise ValueError('Test on %s is not passed!' % net_name)
 
 
+def convert_simulink_to_modelica_timeseries(simseri):
+    for check in range(len(simseri)):
+        simseri[check].name = simseri[check].name.replace('U CA:', '')
+        simseri[check].name = simseri[check].name.replace('Vrms', 'Vpp')
+        simseri[check].name = simseri[check].name.replace('VDegree', 'Vangle')
+        simseri[check].name = simseri[check].name.replace(' ', '')
 
+    for check in range(len(simseri)):
+        if 'Vpp' in simseri[check].name:
+            simseri[check].values = simseri[check].values * 0.577350
+
+        if 'Vangle' in simseri[check].name:
+            simseri[check].values = simseri[check].values - 30
+    return simseri
 
 
 
