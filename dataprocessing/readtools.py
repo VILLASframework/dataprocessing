@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 from .timeseries import *
@@ -270,4 +271,58 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     line_del = sorted(line_del)
     for num_to_del in range(len(line_del)):
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
+    return timeseries
+
+def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex=False):
+    str_tmp = open(file_name, 'r', encoding='latin-1')  # Read in files, using latin-1 to decode /xb0
+
+    # Read in data from result file of neplan
+    name = []  # list for data type names
+    value = []  # list for data
+
+    timeseries = []
+    line_del = []  # a list for the value to be deleted
+
+    for line in str_tmp.readlines():
+        line = line.replace("°", "")
+        del value[:]
+        del name[:]
+        # read in different data and start processing
+        if len(line) > 37:
+            if line[31:35] == '--->':
+                if line[13:17] == 'Arms':
+                    name = [line[37:len(line)].rstrip() + '.Arms', line[37:len(line)].rstrip() + '.IDegree']
+                elif line[13:17] == 'Vrms':
+                    name = [line[37:len(line)].rstrip() + '.Vrms', line[37:len(line)].rstrip() + '.VDegree']
+                value = [float(line[0:13]), float(line[18:31])]
+                timeseries.append(TimeSeries(name[0],
+                                             np.array([0., 1.]), np.array([value[0], value[0]])))
+                timeseries.append(TimeSeries(name[1],
+                                             np.array([0., 1.]), np.array([value[1], value[1]])))
+
+    # Read in variables which match with regex
+    if is_regex is True:
+        p = re.compile(timeseries_names)
+        length = len(timeseries)
+        for rule_check in range(length):
+            if p.search(timeseries[rule_check].name):
+                pass
+            else:
+                line_del.append(rule_check)
+
+    # Read in specified time series
+    elif timeseries_names is not None:
+        length = len(timeseries)
+        for rule_check in range(length):
+            if timeseries_names == timeseries[rule_check].name:
+                pass
+            else:
+                line_del.append(rule_check)
+
+    # delete those values that are not needed.
+    line_del = set(line_del)
+    line_del = sorted(line_del)
+    for num_to_del in range(len(line_del)):
+        del timeseries[line_del[len(line_del) - num_to_del - 1]]
+
     return timeseries
