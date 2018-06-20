@@ -3,6 +3,7 @@
 import os
 from dataprocessing.readtools import *
 
+
 def convert_neplan_to_modelica_timeseries(neplan_timeseries):
     """
     Mapping the variable names between modelica and neplan
@@ -46,61 +47,71 @@ def convert_neplan_to_modelica_timeseries(neplan_timeseries):
 
     return neplan_timeseries
 
+def convert_simulink_to_modelica_timeseries(simseri):
+    res = []
+    for check in range(len(simseri)):
+        if 'U AB:' in simseri[check].name:
+            simseri[check].name = simseri[check].name.replace('U AB:', '')
+            simseri[check].name = simseri[check].name.replace('Vrms', 'Vpp')
+            simseri[check].name = simseri[check].name.replace('VDegree', 'Vangle')
+            simseri[check].name = simseri[check].name.replace(' ', '')
+            simseri[check].name = simseri[check].name.replace('_', '')
+            if 'Vangle' in simseri[check].name:
+                simseri[check].values = (simseri[check].values - 30)/180 * cmath.pi
+            res.append(simseri[check])
+    return res
 
-def compare_modelica_neplan(modelica_res, neplan_res):  # compare the result file from NEPLAN and Modelica
-    """
-    Compare Results from modelic and neplan, the name of the components should be kept consistent.
-    :param modelica_res: the path of the modelica result file, whose suffix should be .mat
-    :param neplan_res: the path of the neplan result file, whose suffix should be .rlf
-    :return:
-    """
-    # Read in original neplan result file
-    file_Neplan = os.path.abspath(neplan_res)
-    # Read in original Modelica result file
-    file_Modelica = os.path.abspath(modelica_res)
-    result_neplan = convert_neplan_to_modelica_timeseries(read_timeseries_NEPLAN_loadflow(file_Neplan))
-    result_modelica = read_timeseries_Modelica(file_Modelica)
 
-    # Transfer the angle unit to degree
-    for i in range(len(result_neplan)):
-        result_neplan[i].name = result_neplan[i].name.upper()
-        if 'ANGLE' in result_neplan[i].name:
-            result_neplan[i].values = result_neplan[i].values / cmath.pi * 180  
-    for i in range(len(result_modelica)):
-        result_modelica[i].name = result_modelica[i].name.upper()
-        if 'ANGLE' in result_modelica[i].name:
-            result_modelica[i].values = result_modelica[i].values / cmath.pi * 180
+def compare_timeseries(ts1, ts2):
+    """
+    Compare the result from two timeseries.
+    :param ts1: timeseries
+    :param ts2: timeseries
+    :return: an error dic
+    """
+    if len(ts1) > len(ts2):
+        tmp = ts2
+        ts2 = ts1
+        ts1 = tmp
+    for i in range(len(ts1)):
+        ts1[i].name = ts1[i].name.upper()
+    for i in range(len(ts2)):
+        ts2[i].name = ts2[i].name.upper()
 
     timeseries_names = []  # list for names of components
     timeseries_error = []  # list for error
-    len_limit = len(result_modelica)
+    len_ts1 = len(ts1)
+    len_limit = len(ts2)
 
     # Match the components in result files, and compare them
-    for i in range(len(result_neplan)):
+    for i in range(len_ts1):
         flag_not_found = False
         for j in range(len_limit):
-            if result_neplan[i].name == result_modelica[j].name:  # Find the same variable
-                timeseries_names.append(result_neplan[i].name)
-                timeseries_error.append(TimeSeries.rmse(result_modelica[j], result_neplan[i]))
+            if ts1[i].name == ts2[j].name:  # Find the same variable
+                timeseries_names.append(ts1[i].name)
+                timeseries_error.append(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[1])
+                print(ts1[i].name)
+                print(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[1])
                 flag_not_found = True
         if flag_not_found is False:
             # No such variable in Modelica model, set the error to -1
+            timeseries_names.append(ts1[i].name)
             timeseries_error.append(-1)
     return dict(zip(timeseries_names, timeseries_error))
 
-def assert_modelia_neplan_results(net_name, modelica_res, neplan_res):  # Assert the model using the function above
+
+def assert_modelia_results(net_name, error):
     """
-    Assert the result in Modelica according to the results from neplan
-    :param net_name: The name of the net should be clarified manually
-    :param modelica_res: the path of the modelica result file, whose suffix should be .mat
-    :param neplan_res: the path of the neplan result file, whose suffix should be .rlf
-    :return:
+    assert the result data of a net.
+    :param net_name: name of the network
+    :param modelica_res: timeseries of modelica result
+    :param simulink_res: timeseries of reference result
+    :return: outputs to command line which are the results of the assert
     """
     fail_list = []  # List for all the failed test
-    error = compare_modelica_neplan(modelica_res, neplan_res)
     #  the limitations are set to 0.5
     for name in error.keys():
-        if abs(error[name]) > 0.5:
+        if abs(error[name]) > 0.01:
             fail_list.append(name)
         else:
             print("Test on %s Passed" % name)
@@ -114,20 +125,19 @@ def assert_modelia_neplan_results(net_name, modelica_res, neplan_res):  # Assert
         raise ValueError('Test on %s is not passed!' % net_name)
 
 
-def convert_simulink_to_modelica_timeseries(simseri):
-    for check in range(len(simseri)):
-        simseri[check].name = simseri[check].name.replace('U CA:', '')
-        simseri[check].name = simseri[check].name.replace('Vrms', 'Vpp')
-        simseri[check].name = simseri[check].name.replace('VDegree', 'Vangle')
-        simseri[check].name = simseri[check].name.replace(' ', '')
-
-    for check in range(len(simseri)):
-        if 'Vpp' in simseri[check].name:
-            simseri[check].values = simseri[check].values * 0.577350
-
-        if 'Vangle' in simseri[check].name:
-            simseri[check].values = simseri[check].values - 30
-    return simseri
-
-
-
+def validate_modelica_res(net_name, modelica_res_path, reference_res_path):
+    """
+    Top level function for the validation of modelica, calls all the function needed to execute the validation.
+    :param modelica_res_path: the path of the modelica result file, whose suffix should be .mat
+    :param reference_res_path: the path of the reference result file, whose suffix should be .rep(simulink)/.rlf(neplan)
+    :param reference_res_type: a flag to clarify where the reference come from, should be either Simulink or Neplan
+    :return: outputs to command line which are the results of the validation.
+    """
+    res_mod = read_timeseries_Modelica (modelica_res_path)
+    if os.path.splitext(reference_res_path)[1] == '.rep':
+        res_ref = convert_simulink_to_modelica_timeseries(read_timeseries_simulink_loadflow(reference_res_path))
+    elif os.path.splitext(reference_res_path)[1] == '.rlf':
+        res_ref = convert_neplan_to_modelica_timeseries(read_timeseries_NEPLAN_loadflow(reference_res_path))
+    
+    res_err = compare_timeseries(res_ref, res_mod)
+    assert_modelia_results(net_name, res_err)
