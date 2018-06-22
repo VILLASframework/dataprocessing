@@ -2,7 +2,7 @@ import re
 import os
 import sys
 
-from dataprocessing.Validationtools import *
+from dataprocessing.validationtools import *
 from dataprocessing.readtools import *
 print("Test Start")
 # We need to extract all the result files from git now
