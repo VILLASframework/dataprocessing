@@ -184,13 +184,13 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     value = []  # list for data
 
 
-    namelist = ['U', 'ANGLEU', 'P', 'Q','I', 'ANGLEI']
+    namelist = ['U', 'ANGLEU', 'P', 'Q', 'I', 'ANGLEI']  # Suffix of the data name
     timeseries = []
     line_del = []  # a list for the value to be deleted
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')  # regular expression to find float values
 
-    # the ',' in the floats in result file to '.'
-    for line in str_tmp.readlines():
+    # Transfer ',' in the floats in result file to '.'
+    for line in str_tmp.readlines():  # Check the data to find out floats with ','
         line = line.replace(",", ".")
         high -= high
         low -= low
@@ -216,7 +216,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
         with the assumption that the topology of the gird should be correct with which we can validate the 
         current by comparing the voltage of the nodes connected to the ends of the line 
         """
-        if flag is not True:
+        if flag is not True:  # flag is true when it's the first line
             if value[3] is not '#':
                 for m in range(6):
                     timeseries.append(TimeSeries(value[3] + '.' + namelist[m],
