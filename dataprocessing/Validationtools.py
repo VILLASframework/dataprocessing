@@ -91,7 +91,7 @@ def compare_timeseries(ts1, ts2):
                 timeseries_names.append(ts1[i].name)
                 timeseries_error.append(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[1])
                 print(ts1[i].name)
-                print(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[1])
+                print(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[len(ts1[i].values) - 1])
                 flag_not_found = True
         if flag_not_found is False:
             # No such variable in Modelica model, set the error to -1
@@ -130,7 +130,6 @@ def validate_modelica_res(net_name, modelica_res_path, reference_res_path):
     Top level function for the validation of modelica, calls all the function needed to execute the validation.
     :param modelica_res_path: the path of the modelica result file, whose suffix should be .mat
     :param reference_res_path: the path of the reference result file, whose suffix should be .rep(simulink)/.rlf(neplan)
-    :param reference_res_type: a flag to clarify where the reference come from, should be either Simulink or Neplan
     :return: outputs to command line which are the results of the validation.
     """
     res_mod = read_timeseries_Modelica (modelica_res_path)
