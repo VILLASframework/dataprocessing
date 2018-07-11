@@ -1,7 +1,6 @@
-
 import numpy as np
 import pandas as pd
-from .timeseries import *
+from dataprocessing.timeseries import *
 import re
 import cmath
 
@@ -30,6 +29,9 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
             timeseries = []
             for name in timeseries_names:
                 timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
+
+    #print('Modelica results column names: ' + str(timeseries_names))
+    #print('Modelica results number: ' + str(len(timeseries_names)))
 
     return timeseries
 
@@ -183,8 +185,10 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     """
     Read in NEPLAN loadflow result from result file, the result is in angle notation, amplitude and angle are stored
     separately
+    To keep consistent with the names of voltage in most cases, the name of voltage variables are changed into '.V*'
+    instead of '.U*' as in the result file
 
-    :param file_name: path of the mat file for the loadflow result from neplan
+    :param file_name: name of the mat file for the loadflow result from neplan
     :param timeseries_names: column name to be read
     :param is_regex: flag for using regular expression
     :return: list of Timeseries objects
@@ -199,13 +203,13 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     value = []  # list for data
 
 
-    namelist = ['U', 'ANGLEU', 'P', 'Q','I', 'ANGLEI']
+    namelist = ['U', 'ANGLEU', 'P', 'Q', 'I', 'ANGLEI']  # Suffix of the data name
     timeseries = []
     line_del = []  # a list for the value to be deleted
     isfloat = re.compile(r'^[-+]?[0-9]+\.[0-9]+$')  # regular expression to find float values
 
     # Transfer ',' in the floats in result file to '.'
-    for line in str_tmp.readlines():
+    for line in str_tmp.readlines():  # Check the data to find out floats with ','
         line = line.replace(",", ".")
         high -= high
         low -= low
@@ -267,6 +271,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     for num_to_del in range(len(line_del)):
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
     return timeseries
+
 
 def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex=False):
     """
@@ -333,5 +338,3 @@ def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
 
     return timeseries
-
-
