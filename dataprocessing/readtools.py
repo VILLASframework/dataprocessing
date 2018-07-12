@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
-from dataprocessing.timeseries import *
+from timeseries import *
 import re
-import cmath
 
 def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
     from modelicares import SimRes
@@ -29,9 +28,6 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
             timeseries = []
             for name in timeseries_names:
                 timeseries.append(TimeSeries(name, sim(name).times(), sim(name).values()))
-
-    #print('Modelica results column names: ' + str(timeseries_names))
-    #print('Modelica results number: ' + str(len(timeseries_names)))
 
     return timeseries
 
@@ -265,11 +261,13 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
                 pass
             else:
                 line_del.append(rule_check)
+
     # delete those values that are not needed.
     line_del = set(line_del)
     line_del = sorted(line_del)
     for num_to_del in range(len(line_del)):
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
+
     return timeseries
 
 
@@ -336,5 +334,4 @@ def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex
     line_del = sorted(line_del)
     for num_to_del in range(len(line_del)):
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
-
     return timeseries

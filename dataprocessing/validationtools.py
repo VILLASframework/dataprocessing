@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
+
 import os
-from dataprocessing.readtools import *
+
+from readtools import *
+
 
 
 def convert_neplan_to_modelica_timeseries(neplan_timeseries):
@@ -94,9 +97,13 @@ def compare_timeseries(ts1, ts2):
         for j in range(len_limit):
             if ts1[i].name == ts2[j].name:  # Find the same variable
                 timeseries_names.append(ts1[i].name)
-                timeseries_error.append(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[1])
+                if ts1[i].values[0] == 0:
+                    timeseries_error.append(TimeSeries.rmse(ts2[j], ts1[i]))  # is it good to do so?
+                else:
+                    timeseries_error.append(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[0])
+
                 print(ts1[i].name)
-                print(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[len(ts1[i].values) - 1])
+                print(timeseries_error[len(timeseries_error) - 1])
                 flag_not_found = True
         if flag_not_found is False:
             # No such variable in Modelica model, set the error to -1
@@ -116,7 +123,7 @@ def assert_modelia_results(net_name, error):
     fail_list = []  # List for all the failed test
     #  the limitations are set to 0.5
     for name in error.keys():
-        if abs(error[name]) > 0.01:
+        if abs(error[name]) > 0.5:
             fail_list.append(name)
         else:
             print("Test on %s Passed" % name)
