@@ -1,7 +1,12 @@
+#!/usr/bin/python
+# coding: utf8 
+
 import numpy as np
 import pandas as pd
 from timeseries import *
 import re
+
+
 
 def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
     from modelicares import SimRes
@@ -289,7 +294,6 @@ def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex
     # Read in data from result file of neplan
     name = []  # list for data type names
     value = []  # list for data
-
     timeseries = []
     line_del = []  # a list for the value to be deleted
 
