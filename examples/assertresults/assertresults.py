@@ -1,15 +1,13 @@
 import re
 import os
 import sys
+print(os.path.normpath(os.getcwd() + "/data-processing/dataprocessing"))
+sys.path.append(os.path.normpath(os.getcwd() + "/data-processing/dataprocessing"))
 
-sys.path.append(r".\data-processing\dataprocessing")
-sys.path.append(r".\python-for-modelica-dev_interface\Py4Mod\py4mod")
 
 from validationtools import *
 from readtools import *
 #from ModelicaModel import ModelicaModel
-
-os.chdir(r"D:\HIWI\Git")
 
 
 print("Test Start")
