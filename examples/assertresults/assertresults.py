@@ -2,8 +2,8 @@ import re
 import os
 import sys
 
-sys.path.append(r"D:\HIWI\Git\data-processing\dataprocessing")
-sys.path.append(r"D:\HIWI\Git\python-for-modelica-dev_interface\Py4Mod\py4mod")
+sys.path.append(r".\data-processing\dataprocessing")
+sys.path.append(r".\python-for-modelica-dev_interface\Py4Mod\py4mod")
 
 from ModelicaModel import ModelicaModel
 from validationtools import *
