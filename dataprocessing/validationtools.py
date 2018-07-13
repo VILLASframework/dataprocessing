@@ -5,7 +5,19 @@ import os
 
 from readtools import *
 
-
+"""
+The validationtools are used to validate the simulate results from the model.
+A typical process of validate a model contains four parts
+ - Building & Running the module to get results
+ - Reading in the results
+ - Mapping the results with the reference results
+ - Asserting the module
+The first step is done by Py4Mod package, the second by readtool.
+The validationtool focuses on the last two steps. the conversion function converts the reference results 
+timeseries into the modelica timeseries (changing the names and units), the compare function compares two 
+timeseries, and the assert function gives an assertion of the compare result. At last, a top level validation
+function is introduced to organize the whole job.   
+"""
 
 def convert_neplan_to_modelica_timeseries(neplan_timeseries):
     """
@@ -112,7 +124,7 @@ def compare_timeseries(ts1, ts2):
     return dict(zip(timeseries_names, timeseries_error))
 
 
-def assert_modelia_results(net_name, error):
+def assert_modelia_results(net_name, error, threshold):
     """
     assert the result data of a net.
     :param net_name: name of the network
@@ -123,7 +135,7 @@ def assert_modelia_results(net_name, error):
     fail_list = []  # List for all the failed test
     #  the limitations are set to 0.5
     for name in error.keys():
-        if abs(error[name]) > 0.5:
+        if abs(error[name]) > threshold:
             fail_list.append(name)
         else:
             print("Test on %s Passed" % name)
@@ -137,7 +149,7 @@ def assert_modelia_results(net_name, error):
         raise ValueError('Test on %s is not passed!' % net_name)
 
 
-def validate_modelica_res(net_name, modelica_res_path, reference_res_path):
+def validate_modelica_res(net_name, modelica_res_path, reference_res_path, threshold=0.5):
     """
     Top level function for the validation of modelica, calls all the function needed to execute the validation.
     :param modelica_res_path: the path of the modelica result file, whose suffix should be .mat
@@ -151,4 +163,4 @@ def validate_modelica_res(net_name, modelica_res_path, reference_res_path):
         res_ref = convert_neplan_to_modelica_timeseries(read_timeseries_NEPLAN_loadflow(reference_res_path))
     
     res_err = compare_timeseries(res_ref, res_mod)
-    assert_modelia_results(net_name, res_err)
+    assert_modelia_results(net_name, res_err, threshold)
