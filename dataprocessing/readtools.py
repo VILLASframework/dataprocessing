@@ -54,6 +54,24 @@ def read_timeseries_PLECS(filename, timeseries_names=None):
 
     return timeseries_list
 
+def read_timeseries_simulink(filename, timeseries_names=None):
+    pd_df = pd.read_csv(filename)
+    timeseries_list = []
+    if timeseries_names is None:
+        # No trajectory names specified, thus read in all
+        timeseries_names = list(pd_df.columns.values)
+        timeseries_names.remove('time')
+        for name in timeseries_names:
+            timeseries_list.append(TimeSeries(name, pd_df['time'].values, pd_df[name].values))
+    else:
+        # Read in specified time series
+        for name in timeseries_names:
+            timeseries_list.append(TimeSeries(name, pd_df['time'].values, pd_df[name].values))
+
+    print('Simulink results column names: ' + str(timeseries_names))
+    print('Simulink results number: ' + str(len(timeseries_list)))
+
+    return timeseries_list
 
 def read_timeseries_dpsim_real(filename, timeseries_names=None):
     """Reads real time series data from DPsim log file which may have a header.
