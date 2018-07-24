@@ -44,6 +44,19 @@ class TimeSeries:
         return np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())
 
     @staticmethod
+    def norm_rmse(ts1, ts2):
+        """ Calculate root mean square error between two time series,
+        normalized using the mean value of both mean values of ts1 and ts2 
+        """
+        if np.mean(np.array(ts1.values.mean(),ts2.values.mean())) != 0:
+          nrmse = np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())/np.mean(np.array(ts1.values.mean(),ts2.values.mean()))
+          is_norm = True
+        else:
+          nrmse = np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())
+          is_norm = False
+        return (nrmse,is_norm)
+
+    @staticmethod
     def diff(name, ts1, ts2):
         """Returns difference between values of two Timeseries objects.
         """
@@ -66,6 +79,18 @@ class TimeSeries:
         ts_shift = TimeSeries(name, self.time, self.values.real*np.cos(2*np.pi*freq*self.time)
                               - self.values.imag*np.sin(2*np.pi*freq*self.time))
         return ts_shift
+
+    def calc_freq_spectrum(self):
+        """ Calculates frequency spectrum of the time series using FFT
+        :param name: name of returned time series
+        :param freq: shift frequency
+        :return: new timeseries with shifted time domain values
+        """
+        Ts = self.time[1]-self.time[0]
+        fft_values = np.fft.fft(self.values)
+        freqs_num = int(len(fft_values)/2)
+        fft_freqs = np.fft.fftfreq(len(fft_values),d=Ts)
+        return fft_freqs[:freqs_num], np.abs(fft_values[:freqs_num])/freqs_num
 
     def interpolate_cmpl(self, name, timestep):
         """ Not tested yet!
@@ -132,5 +157,5 @@ class TimeSeries:
         Assumes the same time steps for both timeseries.
         """
         ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
-        ts_abs = TimeSeries(name, ts_real.time, ts_complex.abs())
+        ts_abs = TimeSeries(name, ts_real.time, np.absolute(ts_complex))
         return ts_abs
