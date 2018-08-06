@@ -1,7 +1,7 @@
 import re
 import os
 import sys
-print(os.path.normpath(os.getcwd() + "/data-processing/dataprocessing"))
+
 sys.path.append(os.path.normpath(os.getcwd() + "/data-processing/dataprocessing"))
 
 

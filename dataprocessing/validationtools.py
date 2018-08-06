@@ -7,16 +7,18 @@ from readtools import *
 
 """
 The validationtools are used to validate the simulate results from the model.
-A typical process of validate a model contains four parts
+A typical process to validate a model contains four parts
  - Building & Running the module to get results
  - Reading in the results
  - Mapping the results with the reference results
  - Asserting the module
 The first step is done by Py4Mod package, the second by readtool.
-The validationtool focuses on the last two steps. the conversion function converts the reference results 
-timeseries into the modelica timeseries (changing the names and units), the compare function compares two 
-timeseries, and the assert function gives an assertion of the compare result. At last, a top level validation
-function is introduced to organize the whole job.   
+
+The validationtool focuses on the last two steps: the conversion function converts the reference-results 
+timeseries into the modelica timeseries (mapping the names and units), the comparision function compares two 
+timeseries, and the assert function gives an assertion to the result comparison. 
+
+At last, a top level validation function is introduced to organize the whole job.   
 """
 
 def convert_neplan_to_modelica_timeseries(neplan_timeseries):
@@ -30,7 +32,7 @@ def convert_neplan_to_modelica_timeseries(neplan_timeseries):
     line_del = []
     # remove all the line current
 
-    # Find current of the same component, which means the current needn't to be validated
+    # Find current of the same component, which means the current don't need to be validated
     for check in range(len(neplan_timeseries)):
         if neplan_timeseries[check].values[0] == '#':
             line_del.append(check)
@@ -154,6 +156,7 @@ def validate_modelica_res(net_name, modelica_res_path, reference_res_path, thres
     Top level function for the validation of modelica, calls all the function needed to execute the validation.
     :param modelica_res_path: the path of the modelica result file, whose suffix should be .mat
     :param reference_res_path: the path of the reference result file, whose suffix should be .rep(simulink)/.rlf(neplan)
+    :param threshold: the threshold of the assertion, a default value of 0.5 is introduced.
     :return: outputs to command line which are the results of the validation.
     """
     res_mod = read_timeseries_Modelica (modelica_res_path)
