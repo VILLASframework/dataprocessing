@@ -18,7 +18,7 @@ def get_node_voltage_phasors(dpsim_timeseries_list):
     return voltage_phasor_list
 
 def get_node_emt_voltages(timeseries_list, freq):
-    """Calculate voltage phasors of all nodes
+    """Calculate EMT results of all nodes
     :param timeseries_list: timeseries list retrieved from dpsim results
     :return:
     """
