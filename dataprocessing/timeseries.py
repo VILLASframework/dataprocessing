@@ -104,22 +104,7 @@ class TimeSeries:
         imagValues = interp1d(interpl_time, self.values.imag)
         ts_return = TimeSeries(name, time, np.vectorize(complex)(realValues, imagValues))
         return timeseries
-
-    @staticmethod
-    def sep_dynphasor_shift_to_emt(name, real, imag, freq):
-        """ Shift dynamic phasor values to EMT by frequency freq.
-            Assumes the same time steps for both timeseries.
-        :param name: name of returned time series
-        :param real: timeseries with real values
-        :param imag: timeseries with imaginary values
-        :param freq: shift frequency
-        :return: new timeseries with shifted time domain values
-        """
-        ts_shift = TimeSeries(name, real.time,
-                              real.values * np.cos(2 * np.pi * freq * real.time) - imag.values * np.sin(
-                                  2 * np.pi * freq * real.time))
-        return ts_shift
-
+    
     @staticmethod
     def check_node_number_comp(ts_list_comp, node):
         """
