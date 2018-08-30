@@ -81,7 +81,7 @@ def read_timeseries_dpsim(filename, timeseries_names=None):
     :return: list of Timeseries objects
     """
     pd_df = pd.read_csv(filename)
-    timeseries_list = []
+    timeseries_list = {}
     cmpl_result_columns = []
     real_result_columns = []
 
@@ -107,14 +107,12 @@ def read_timeseries_dpsim(filename, timeseries_names=None):
                 #print("Found real variable: " + column)       
         
         for column in real_result_columns:                
-            timeseries_list.append(
-                TimeSeries(column, timestamps, pd_df[column]))
+            timeseries_list[column] = TimeSeries(column, timestamps, pd_df[column])
 
         for column in cmpl_result_columns:                
-            timeseries_list.append(
-                TimeSeries(column, timestamps, 
-                    np.vectorize(complex)(pd_df[column + real_string], 
-                    pd_df[column + imaginary_string])))
+            timeseries_list[column] = TimeSeries(column, timestamps, 
+                np.vectorize(complex)(pd_df[column + real_string], 
+                pd_df[column + imaginary_string]))
            
     else:
         # Read in specified time series
