@@ -14,7 +14,7 @@ def read(fname):
 
 setup(
     name = "acs-dataprocessing",
-    version = "0.1.2",
+    version = "0.1.3",
     author = "Markus Mirz, Jan Dinkelbach, Steffen Vogel",
     author_email = "acs-software@eonerc.rwth-aachen.de",
     description = "Several tools for processing simulation results",
