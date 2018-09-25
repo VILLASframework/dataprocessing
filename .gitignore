@@ -32,3 +32,5 @@ __pycache__
 
 # ignore jupyter notebook files
 .ipynb_checkpoints
+
+.eggs
