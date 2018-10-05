@@ -100,7 +100,7 @@ def read_timeseries_simulink(filename, timeseries_names=None):
 
     return timeseries_list
 
-def read_timeseries_dpsim(filename, timeseries_names=None):
+def read_timeseries_dpsim(filename, timeseries_names=None, print_status=True):
     """Reads complex time series data from DPsim log file. Real and
     imaginary part are stored in one complex variable.
     :param filename: name of the csv file that has the data
@@ -145,9 +145,39 @@ def read_timeseries_dpsim(filename, timeseries_names=None):
         # Read in specified time series
         print('cannot read specified columns yet')
 
-    print('DPsim results real column names: ' + str(real_result_columns))
-    print('DPsim results complex column names: ' + str(cmpl_result_columns))
-    print('DPsim results variable number: ' + str(len(timeseries_list)))
-    print('DPsim results length: ' + str(len(timestamps)))
+    if print_status :
+        print('DPsim results real column names: ' + str(real_result_columns))
+        print('DPsim results complex column names: ' + str(cmpl_result_columns))
+        print('DPsim results variable number: ' + str(len(timeseries_list)))
+        print('DPsim results length: ' + str(len(timestamps)))
 
     return timeseries_list
+
+def read_dpsim_log(log_path):
+    log_file = open(log_path, "r")
+    log_lines = [line for line in log_file]
+    log_file.close()
+
+    # Sectionize
+    log_sections = {'init':[], 'none':[], 'sysmat_stamp':[], 'sysmat_final':[], 'sourcevec_stamp':[], 'sourcevec_final':[], 'ludecomp':[]}
+    section = 'init'
+    for line_pos in range(len(log_lines)):
+        if re.search('DEBUG: Stamping .+ into system matrix:', log_lines[line_pos]):
+            section = 'sysmat_stamp'
+        elif re.search('INFO: System matrix:', log_lines[line_pos]):
+            section = 'sysmat_final'
+        elif re.search('DEBUG: Stamping .+ into source vector:', log_lines[line_pos]):
+            section = 'sourcevec_stamp'
+        elif re.search('INFO: Right side vector:', log_lines[line_pos]):
+            section = 'sourcevec_final'
+        elif re.search('INFO: LU decomposition:', log_lines[line_pos]):
+            section = 'ludecomp'
+        elif re.search('INFO: Number of network simulation nodes:', log_lines[line_pos]): 
+            section = 'none'
+        elif re.search('INFO: Added .+ to simulation.', log_lines[line_pos]):
+            section = 'none'
+        elif re.search('INFO: Initial switch status:', log_lines[line_pos]):
+            section = 'none'
+        log_sections[section].append(line_pos)
+
+    return log_lines, log_sections
