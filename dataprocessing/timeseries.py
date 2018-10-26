@@ -37,6 +37,31 @@ class TimeSeries:
         ts_phase = TimeSeries(name, self.time, phase_values)
         return ts_phase
 
+    def phasor(self, name):
+        """Calculate phasor of complex time series and return dict with abs and phase.
+        """
+        ts_abs = ts.abs(ts.name + '_abs')
+        ts_phase = ts.phase(ts.name + '_phase')
+        ts_phasor = {}
+        ts_phasor['abs'] = ts_abs
+        ts_phasor['phase'] = ts_phase
+        
+        return ts_phasor
+
+    @staticmethod
+    def frequency_shift_list(timeseries_list, freq):
+        """Calculate shifted frequency results of all time series
+        :param timeseries_list: timeseries list retrieved from dpsim results
+        :param freq: frequency by which the timeseries should be shifted
+        :return: list of shifted time series
+        """
+        result_list = {}
+        for name, ts in timeseries_list.items():
+            ts_emt = ts.frequency_shift(ts.name, freq)
+            result_list[ts.name] = ts_emt
+
+        return result_list
+
     @staticmethod
     def rmse(ts1, ts2):
         """ Calculate root mean square error between two time series
@@ -69,7 +94,7 @@ class TimeSeries:
             ts_diff = TimeSeries(name, time, (interp_vals_ts2 - interp_vals_ts1))
         return ts_diff
 
-    def dynphasor_shift_to_emt(self, name, freq):
+    def frequency_shift(self, name, freq):
         """ Shift dynamic phasor values to EMT by frequency freq.
             Assumes the same time steps for both timeseries.
         :param name: name of returned time series
