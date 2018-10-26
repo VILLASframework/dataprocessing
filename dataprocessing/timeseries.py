@@ -40,8 +40,8 @@ class TimeSeries:
     def phasor(self, name):
         """Calculate phasor of complex time series and return dict with abs and phase.
         """
-        ts_abs = ts.abs(ts.name + '_abs')
-        ts_phase = ts.phase(ts.name + '_phase')
+        ts_abs = self.abs(self.name + '_abs')
+        ts_phase = self.phase(self.name + '_phase')
         ts_phasor = {}
         ts_phasor['abs'] = ts_abs
         ts_phasor['phase'] = ts_phase
@@ -169,3 +169,15 @@ class TimeSeries:
         ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
         ts_abs = TimeSeries(name, ts_real.time, np.absolute(ts_complex))
         return ts_abs
+
+    @staticmethod
+    def phasors(timeseries_list):
+        """Calculate voltage phasors of all nodes
+        :param timeseries_list: timeseries list with real and imaginary parts
+        :return: timeseries list with abs and phase
+        """
+        phasor_list = {}
+        for name, ts in timeseries_list.items():
+            phasor_list[name] = ts.phasor(name)
+
+        return phasor_list
