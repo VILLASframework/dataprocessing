@@ -56,24 +56,51 @@ def read_timeseries_PLECS(filename, timeseries_names=None):
 
 def read_timeseries_simulink(filename, timeseries_names=None):
     pd_df = pd.read_csv(filename)
-    timeseries_list = []
+    timeseries_list = {}
+    cmpl_result_columns = []
+    real_result_columns = []
+
     if timeseries_names is None:
-        # No trajectory names specified, thus read in all
-        timeseries_names = list(pd_df.columns.values)
-        timeseries_names.remove('time')
-        for name in timeseries_names:
-            timeseries_list.append(TimeSeries(name, pd_df['time'].values, pd_df[name].values))
+        # No column names specified, thus read in all and strip off spaces
+        pd_df.rename(columns=lambda x: x.strip(), inplace=True)
+        column_names = list(pd_df.columns.values)
+
+        # Remove timestamps column name and store separately
+        column_names.remove('time')
+        timestamps = pd_df.iloc[:, 0]
+
+        # Find real and complex variable names
+        real_string = '.real'
+        imaginary_string = '.imag'
+        for column in column_names:
+            if real_string in column:
+                tmp = column.replace(real_string, '')
+                cmpl_result_columns.append(tmp)
+                #print("Found complex variable: " + tmp)
+            elif not imaginary_string in column:
+                real_result_columns.append(column)
+                #print("Found real variable: " + column)
+
+        for column in real_result_columns:
+            timeseries_list[column] = TimeSeries(column, timestamps, pd_df[column])
+
+        for column in cmpl_result_columns:
+            timeseries_list[column] = TimeSeries(column, timestamps,
+                np.vectorize(complex)(pd_df[column + real_string],
+                pd_df[column + imaginary_string]))
+
     else:
         # Read in specified time series
-        for name in timeseries_names:
-            timeseries_list.append(TimeSeries(name, pd_df['time'].values, pd_df[name].values))
+        print('cannot read specified columns yet')
 
-    print('Simulink results column names: ' + str(timeseries_names))
-    print('Simulink results number: ' + str(len(timeseries_list)))
+    print('Simulink results real column names: ' + str(real_result_columns))
+    print('Simulink results complex column names: ' + str(cmpl_result_columns))
+    print('Simulink results variable number: ' + str(len(timeseries_list)))
+    print('Simulink results length: ' + str(len(timestamps)))
 
     return timeseries_list
 
-def read_timeseries_dpsim(filename, timeseries_names=None):
+def read_timeseries_dpsim(filename, timeseries_names=None, print_status=True):
     """Reads complex time series data from DPsim log file. Real and
     imaginary part are stored in one complex variable.
     :param filename: name of the csv file that has the data
@@ -132,9 +159,39 @@ def read_timeseries_dpsim(filename, timeseries_names=None):
         # Read in specified time series
         print('cannot read specified columns yet')
 
-    print('DPsim results real column names: ' + str(real_result_columns))
-    print('DPsim results complex column names: ' + str(cmpl_result_columns))
-    print('DPsim results variable number: ' + str(len(timeseries_list)))
-    print('DPsim results length: ' + str(len(timestamps)))
+    if print_status :
+        print('DPsim results real column names: ' + str(real_result_columns))
+        print('DPsim results complex column names: ' + str(cmpl_result_columns))
+        print('DPsim results variable number: ' + str(len(timeseries_list)))
+        print('DPsim results length: ' + str(len(timestamps)))
 
     return timeseries_list
+
+def read_dpsim_log(log_path):
+    log_file = open(log_path, "r")
+    log_lines = [line for line in log_file]
+    log_file.close()
+
+    # Sectionize
+    log_sections = {'init':[], 'none':[], 'sysmat_stamp':[], 'sysmat_final':[], 'sourcevec_stamp':[], 'sourcevec_final':[], 'ludecomp':[]}
+    section = 'init'
+    for line_pos in range(len(log_lines)):
+        if re.search('DEBUG: Stamping .+ into system matrix:', log_lines[line_pos]):
+            section = 'sysmat_stamp'
+        elif re.search('INFO: System matrix:', log_lines[line_pos]):
+            section = 'sysmat_final'
+        elif re.search('DEBUG: Stamping .+ into source vector:', log_lines[line_pos]):
+            section = 'sourcevec_stamp'
+        elif re.search('INFO: Right side vector:', log_lines[line_pos]):
+            section = 'sourcevec_final'
+        elif re.search('INFO: LU decomposition:', log_lines[line_pos]):
+            section = 'ludecomp'
+        elif re.search('INFO: Number of network simulation nodes:', log_lines[line_pos]):
+            section = 'none'
+        elif re.search('INFO: Added .+ to simulation.', log_lines[line_pos]):
+            section = 'none'
+        elif re.search('INFO: Initial switch status:', log_lines[line_pos]):
+            section = 'none'
+        log_sections[section].append(line_pos)
+
+    return log_lines, log_sections

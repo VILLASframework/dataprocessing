@@ -1,3 +1,6 @@
+build
+dist
+
 # ignore results 
 *.csv
 *.mat
@@ -32,3 +35,5 @@ __pycache__
 
 # ignore jupyter notebook files
 .ipynb_checkpoints
+
+.eggs

@@ -1,5 +1,6 @@
 from dataprocessing.readtools import *
 from dataprocessing.timeseries import *
+from dataprocessing.plottools import *
 
 def get_node_voltage_phasors(dpsim_timeseries_list):
     """Calculate voltage phasors of all nodes
@@ -24,7 +25,7 @@ def get_node_emt_voltages(timeseries_list, freq):
     """
     voltages_list = {}
     for name, ts in timeseries_list.items():
-        ts_emt = ts.dynphasor_shift_to_emt(ts.name, freq)
+        ts_emt = ts.frequency_shift(ts.name, freq)
         voltages_list[ts.name] = ts_emt
 
     return voltages_list
