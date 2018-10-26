@@ -95,25 +95,39 @@ def read_timeseries_dpsim(filename, timeseries_names=None):
         timestamps = pd_df.iloc[:, 0]
 
         # Find real and complex variable names
-        real_string = '_re'
-        imaginary_string = '_im'
+        suffixes = [ ('_re', '_im'), ('.real', '.imag') ]
         for column in column_names:
-            if real_string in column:
-                tmp = column.replace(real_string, '')
-                cmpl_result_columns.append(tmp)
-                #print("Found complex variable: " + tmp)
-            elif not imaginary_string in column:
-                real_result_columns.append(column)
-                #print("Found real variable: " + column)       
-        
-        for column in real_result_columns:                
+            is_complex = False
+            for suffix in suffixes:
+                real_suffix = suffix[0]
+                imag_suffix = suffix[1]
+
+                if column.endswith(imag_suffix):
+                    is_complex = True
+                    break # Ignore imag columns
+
+                if column.endswith(real_suffix):
+                    is_complex = True
+                    column_base = column.replace(real_suffix, '')
+
+                    if column_base + imag_suffix not in column_names:
+                        continue
+
+                    cmpl_result_columns.append(column_base)
+                    timeseries_list[column_base] = TimeSeries(column_base, timestamps,
+                        np.vectorize(complex)(
+                            pd_df[column_base + real_suffix],
+                            pd_df[column_base + imag_suffix]
+                        )
+                    )
+                    break
+
+            if is_complex:
+                continue
+
+            real_result_columns.append(column)
             timeseries_list[column] = TimeSeries(column, timestamps, pd_df[column])
 
-        for column in cmpl_result_columns:                
-            timeseries_list[column] = TimeSeries(column, timestamps, 
-                np.vectorize(complex)(pd_df[column + real_string], 
-                pd_df[column + imaginary_string]))
-           
     else:
         # Read in specified time series
         print('cannot read specified columns yet')
