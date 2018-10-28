@@ -1,5 +1,5 @@
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 def read(fname):
     dname = os.path.dirname(__file__)
@@ -13,15 +13,15 @@ def read(fname):
             return f.read()
 
 setup(
-    name = "acs-dataprocessing",
-    version = "0.1.5",
+    name = "villas-dataprocessing",
+    version = "0.2.0",
     author = "Markus Mirz, Jan Dinkelbach, Steffen Vogel",
     author_email = "acs-software@eonerc.rwth-aachen.de",
     description = "Several tools for processing simulation results",
     license = "GPL-3.0",
     keywords = "simulation power system real-time data processing",
     url = "https://git.rwth-aachen.de/acs/public/simulation/data-processing",
-    packages = find_packages(),
+    packages = [ "villas.dataprocessing" ],
     long_description = read('README.md'),
     classifiers = [
         "Development Status :: 4 - Beta",
