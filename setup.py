@@ -1,16 +1,25 @@
-import os
+import os, re
 from setuptools import setup
+
+def cleanhtml(raw_html):
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, '', raw_html)
+    return cleantext
 
 def read(fname):
     dname = os.path.dirname(__file__)
     fname = os.path.join(dname, fname)
 
-    try:
-        import m2r
-        return m2r.parse_from_file(fname)
-    except ImportError:
-        with open(fname) as f:
-            return f.read()
+    with open(fname) as f:
+        contents = f.read()
+        sanatized = cleanhtml(contents)
+
+        try:
+            from m2r import M2R
+            m2r = M2R()
+            return m2r(sanatized)
+        except:
+            return sanatized
 
 setup(
     name = "villas-dataprocessing",
