@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 import re
-from .timeseries import *
+from timeseries import *
 
 
 def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
