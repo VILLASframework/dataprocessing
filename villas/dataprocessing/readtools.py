@@ -102,7 +102,7 @@ def read_timeseries_csv(filename, timeseries_names=None, print_status=True):
         print('column number: ' + str(len(timeseries_list)))
         print('results length: ' + str(len(timestamps)))
         print('real column names: ' + str(real_result_columns))
-        print('complex column names: ' + str(cmpl_result_columns))          
+        print('complex column names: ' + str(cmpl_result_columns))
 
     return timeseries_list
 
@@ -114,7 +114,7 @@ def read_timeseries_simulink(filename, timeseries_names=None, print_status=True)
 
 def read_dpsim_log(log_path):
     log_file = open(log_path, "r")
-    log_lines = [line for line in log_file]
+    log_lines = [line.rstrip() for line in log_file]
     log_file.close()
 
     # Sectionize
