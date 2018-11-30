@@ -3,7 +3,7 @@ from villas.dataprocessing.timeseries import *
 import villas.dataprocessing.validationtools as validationtools
 
 # reference rtf data directory
-file=r"..\..\..\reference-results\Neplan\ReferenceGrids\WSCC-09_RX.rlf"
+file=r"..\..\..\reference-results\Neplan\ReferenceGrids\CIGRE_MV_NoTap.rlf"
 
 # Read in NEPLAN data
 
@@ -15,9 +15,9 @@ print('************************ Test for read in all variable end **************
 print('\n')
 
 # Read in CIM powerflow data
-
-path = '..\\..\\..\\..\\dpsim_jzh_pfinteg\\dpsim\\build\\Dependencies\\fpotencia\\src\\test\\Logs\\'
-logName = 'WSCC-09_Neplan';
+print('************************ reading dpsim power flow data start ****************')
+path = "D:\\HiWi_ACS\\dpsim_jzh_pfinteg\\dpsim\\build\\Dependencies\\fpotencia\\src\\test\\Logs\\"
+logName = 'CIGRE-MV-NoTap-Neplan';
 dataType = '.csv';
 logFilename = path + logName + dataType;
 ts_dpsim = read_timeseries_csv(logFilename)
@@ -25,6 +25,7 @@ for ts,values in ts_dpsim.items():
     ts_abs = values.abs(ts + '.Vpp')
     ts_phase = values.phase(ts + '.Vangle')
     print(ts_abs.name + ': ' + str(ts_abs.values) + '\n' +ts_phase.name+' :'+ str(ts_phase.values))
+print('************************ reading dpsim power flow data end ****************')
 
 # compare CIM-pf data with NEPLAN
 net_name='WSCC-9bus'
