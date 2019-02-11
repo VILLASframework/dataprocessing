@@ -61,7 +61,7 @@ def read_timeseries_csv(filename, timeseries_names=None, print_status=True):
         timestamps = pd_df.iloc[:, 0]
 
         # Find real and complex variable names
-        suffixes = [ ('_re', '_im'), ('.real', '.imag') ]
+        suffixes = [ ('_re', '_im'), ('.re', '.im'), ('.real', '.imag') ]
         for column in column_names:
             is_complex = False
             for suffix in suffixes:
