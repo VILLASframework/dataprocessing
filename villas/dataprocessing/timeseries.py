@@ -3,7 +3,7 @@ import cmath
 
 class TimeSeries:
     """Stores data from different simulation sources.
-    A TimeSeries object always consists of timestamps and datapoints.
+        A TimeSeries object always consists of timestamps and datapoints.
     """
     def __init__(self, name, time, values, label=""):
         self.time = np.array(time)
@@ -11,43 +11,108 @@ class TimeSeries:
         self.name = name
         self.label = name
 
-    def scale(self, name, factor):
+    def scale(self, factor):
         """Returns scaled timeseries.
-        Assumes the same time steps for both timeseries.
         """
-        ts_scaled = TimeSeries(name, self.time, self.values * factor)
+        ts_scaled = TimeSeries(self.name+'_scl', self.time, self.values * factor)
         return ts_scaled
 
-    def abs(self, name):
+    def abs(self):
         """ Calculate absolute value of complex time series.
         """
         abs_values = []
         for value in self.values:
             abs_values.append(np.abs(value))
-        ts_abs = TimeSeries(name, self.time, abs_values)
+        ts_abs = TimeSeries(self.name+'_abs', self.time, abs_values)
         return ts_abs
 
-    def phase(self, name):
-        """ Calculate absolute value of complex time series.
+    def phase(self):
+        """ Calculate phase of complex time series.
         """
         phase_values = []
         for value in self.values:
             phase_values.append(np.angle(value, deg=True))
-        ts_abs = TimeSeries(name, self.time, phase_values)
-        ts_phase = TimeSeries(name, self.time, phase_values)
+        ts_phase = TimeSeries(self.name+'_phase', self.time, phase_values)
         return ts_phase
 
-    def phasor(self, name):
-        """Calculate phasor of complex time series and return dict with abs and phase.
+    def phasor(self):
+        """Calculate phasors of complex time series 
+            and return dict with absolute value and phase.
         """
-        ts_abs = self.abs(self.name + '_abs')
-        ts_phase = self.phase(self.name + '_phase')
+        ts_abs = self.abs()
+        ts_phase = self.phase()
         ts_phasor = {}
         ts_phasor['abs'] = ts_abs
         ts_phasor['phase'] = ts_phase
         
         return ts_phasor
+    
+    def frequency_shift(self, freq):
+        """ Shift dynamic phasor values to EMT by frequency freq.
+            Only the real part is considered.
+            Assumes the same time steps for both timeseries.
+        :param freq: shift frequency
+        :return: new timeseries with shifted time domain values
+        """
+        ts_shift = TimeSeries(self.name+'_shift', self.time, 
+                            self.values.real*np.cos(2*np.pi * freq * self.time)
+                            - self.values.imag*np.sin(2*np.pi * freq * self.time))
+        return ts_shift
+    
+    def calc_freq_spectrum(self):
+        """ Calculates frequency spectrum of the time series using FFT
+        """
+        Ts = self.time[1]-self.time[0]
+        fft_values = np.fft.fft(self.values)
+        freqs_num = int(len(fft_values)/2)
+        fft_freqs = np.fft.fftfreq(len(fft_values), d=Ts)
 
+        return fft_freqs[:freqs_num], np.abs(fft_values[:freqs_num])/freqs_num
+
+    def interpolate_cmpl(self, timestep):
+        """ Not tested yet!
+            Interpolates complex timeseries with timestep
+        :param timestep:
+        :return:
+        """
+        interpl_time = np.arange(self.time[0], self.time[-1], timestep)
+        realValues = interp1d(interpl_time, self.values.real)
+        imagValues = interp1d(interpl_time, self.values.imag)
+        ts_return = TimeSeries(self.name+'_intpl', time, np.vectorize(complex)(realValues, imagValues))
+        return timeseries
+    
+    @staticmethod
+    def multi_frequency_shift(timeseries_list, freqs_list):
+        """ Calculate shifted frequency results of all time series
+            in list by using the frequency with the same index in the frequency list.
+        :param timeseries_list: timeseries list retrieved from dpsim results
+        :param freq: frequency by which the timeseries should be shifted
+        :return: dict of shifted time series
+        """
+        result_list = {}
+        for ts, freq in zip(timeseries_list, freqs_list):
+            ts_shift = ts.frequency_shift(freq)
+            result_list[ts.name] = ts_shift
+
+        return result_list
+    
+    @staticmethod 
+    def create_emt_from_dp(timeseries_list, freqs_list):
+        """Calculate shifted frequency results of all time series
+        :param timeseries_list: timeseries list retrieved from dpsim results
+        :param freq: frequency by which the timeseries should be shifted
+        :return: list of shifted time series
+        """
+        result = np.zeros_like(timeseries_list[0].values)
+
+        for ts, freq in zip(timeseries_list, freqs_list):
+            ts_shift = ts.frequency_shift(freq)
+            result = result + ts_shift.values
+
+        ts_result = TimeSeries('emt_signal', timeseries_list[0].time, result.real)
+
+        return ts_result
+    
     @staticmethod
     def frequency_shift_list(timeseries_list, freq):
         """Calculate shifted frequency results of all time series
@@ -57,7 +122,7 @@ class TimeSeries:
         """
         result_list = {}
         for name, ts in timeseries_list.items():
-            ts_emt = ts.frequency_shift(ts.name, freq)
+            ts_emt = ts.frequency_shift(freq)
             result_list[ts.name] = ts_emt
 
         return result_list
@@ -93,78 +158,11 @@ class TimeSeries:
             interp_vals_ts2 = np.interp(time, ts2.time, ts2.values)
             ts_diff = TimeSeries(name, time, (interp_vals_ts2 - interp_vals_ts1))
         return ts_diff
-
-    def frequency_shift(self, name, freq):
-        """ Shift dynamic phasor values to EMT by frequency freq.
-            Assumes the same time steps for both timeseries.
-        :param name: name of returned time series
-        :param freq: shift frequency
-        :return: new timeseries with shifted time domain values
-        """
-        ts_shift = TimeSeries(name, self.time, self.values.real*np.cos(2*np.pi*freq*self.time)
-                              - self.values.imag*np.sin(2*np.pi*freq*self.time))
-        return ts_shift
-
-    def calc_freq_spectrum(self):
-        """ Calculates frequency spectrum of the time series using FFT
-        :param name: name of returned time series
-        :param freq: shift frequency
-        :return: new timeseries with shifted time domain values
-        """
-        Ts = self.time[1]-self.time[0]
-        fft_values = np.fft.fft(self.values)
-        freqs_num = int(len(fft_values)/2)
-        fft_freqs = np.fft.fftfreq(len(fft_values),d=Ts)
-        return fft_freqs[:freqs_num], np.abs(fft_values[:freqs_num])/freqs_num
-
-    def interpolate_cmpl(self, name, timestep):
-        """ Not tested yet!
-        Interpolates complex timeseries with timestep
-        :param name:
-        :param timestep:
-        :return:
-        """
-        interpl_time = np.arange(self.time[0], self.time[-1], timestep)
-        realValues = interp1d(interpl_time, self.values.real)
-        imagValues = interp1d(interpl_time, self.values.imag)
-        ts_return = TimeSeries(name, time, np.vectorize(complex)(realValues, imagValues))
-        return timeseries
     
-    @staticmethod
-    def check_node_number_comp(ts_list_comp, node):
-        """
-        Check if node number is available in complex time series.
-        :param ts_comp: complex time series list
-        :param node: node number to be checked
-        :return: true if node number is available, false if out of range
-        """
-        ts_comp_length = len(ts_comp)
-        im_offset = int(ts_comp_length / 2)
-        if im_offset <= node or node < 0:
-            print('Complex node not available')
-            return false
-        else:
-            return true
-
-    @staticmethod
-    def check_node_number(ts_list, node):
-        """
-        Check if node number is available in time series.
-        :param ts: time series list
-        :param node: node number to be checked
-        :return: true if node number is available, false if out of range
-        """
-        ts_length = len(ts)
-        if ts_length <= node or node < 0:
-            print('Node not available')
-            return false
-        else:
-            return true
-
     @staticmethod
     def complex_abs(name, ts_real, ts_imag):
         """ Calculate absolute value of complex variable.
-        Assumes the same time steps for both timeseries.
+            Assumes the same time steps for both timeseries.
         """
         ts_complex = np.vectorize(complex)(ts_real.values, ts_imag.values)
         ts_abs = TimeSeries(name, ts_real.time, np.absolute(ts_complex))
