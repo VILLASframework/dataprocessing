@@ -38,7 +38,6 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
 
     return timeseries
 
-
 def read_timeseries_csv(filename, timeseries_names=None, print_status=True):
     """Reads complex time series data from DPsim log file. Real and
     imaginary part are stored in one complex variable.
@@ -318,3 +317,44 @@ def read_timeseries_simulink_loadflow(filename, timeseries_names=None, is_regex=
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
     return timeseries
 
+def read_timeseries_villas(filename):
+    """
+    Read data in "villas.human" format.
+
+    See: https://villas.fein-aachen.org/doc/node-formats.html
+    Format:   seconds.nanoseconds+offset(sequenceno)      value0 value1 ... valueN
+    Example:  1438959964.162102394(6)     3.489760        -1.882725       0.860070
+
+    :param filename: name of the file that contains the data
+    """
+
+    from villas.node.sample import Sample
+
+    with open(filename, 'r') as fp:
+
+        timeseries = [ ]
+        times = [ ]
+        fields = [ ]
+
+        for line in fp.readlines():
+            if line[0] == '#':
+                continue
+
+            sample = Sample.parse(line)
+
+            times.append(sample.ts)
+
+            for index, field in enumerate(sample.values, start=0):
+                if len(fields) <= index:
+                    fields.append([])
+
+                fields[index].append(field)
+
+        for index, field in enumerate(fields):
+            name = 'signal_{}'.format(index)
+
+            series = TimeSeries(name, times, field)
+
+            timeseries.append(series)
+
+        return timeseries
