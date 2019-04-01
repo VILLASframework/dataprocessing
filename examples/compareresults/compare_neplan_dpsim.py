@@ -43,4 +43,4 @@ for i in range(len(ts_dpsimList)):
 print('************************ convert dpsim to modelica end  ****************')
 
 res_err=validationtools.compare_timeseries(res_ref,ts_dpsimList)
-validationtools.assert_modelia_results(net_name,res_err,threshold)
+validationtools.assert_modelica_results(net_name,res_err,threshold)

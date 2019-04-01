@@ -121,7 +121,7 @@ def compare_timeseries(ts1, ts2):
 
     # Match the components in result files, and compare them
     for i in range(len_ts1):
-        flag_not_found = False
+        flag_found = False
         for j in range(len_limit):
             if ts1[i].name == ts2[j].name:  # Find the same variable
                 timeseries_names.append(ts1[i].name)
@@ -132,15 +132,16 @@ def compare_timeseries(ts1, ts2):
 
                 print(ts1[i].name)
                 print(timeseries_error[len(timeseries_error) - 1])
-                flag_not_found = True
-        if flag_not_found is False:
+                flag_found = True
+        if flag_found is False:
             # No such variable in Modelica model, set the error to -1
-            timeseries_names.append(ts1[i].name)
-            timeseries_error.append(-1)
+            print("Warning: no matching variable found for " + ts1[i].name + "! Skipping error calculation and assertion for this variable...")
+            # timeseries_names.append(ts1[i].name)
+            # timeseries_error.append(-1)
     return dict(zip(timeseries_names, timeseries_error))
 
 
-def assert_modelia_results(net_name, error, threshold):
+def assert_modelica_results(net_name, error, threshold):
     """
     assert the result data of a net.
     :param net_name: name of the network
@@ -149,7 +150,6 @@ def assert_modelia_results(net_name, error, threshold):
     :return: outputs to command line which are the results of the assert
     """
     fail_list = []  # List for all the failed test
-    #  the limitations are set to 0.5
     for name in error.keys():
         if abs(error[name]) > threshold:
             fail_list.append(name)
@@ -173,11 +173,24 @@ def validate_modelica_res(net_name, modelica_res_path, reference_res_path, thres
     :param threshold: the threshold of the assertion, a default value of 0.5 is introduced.
     :return: outputs to command line which are the results of the validation.
     """
+
+    print('\n************************ Modelica Results ****************')
     res_mod = read_timeseries_Modelica (modelica_res_path)
+    for res in res_mod:
+        print(res.name)
+        print(res.values[0]) # only show first value of time series
+
+    print('\n************************ Reference Results ****************')    
     if os.path.splitext(reference_res_path)[1] == '.rep':
         res_ref = convert_simulink_to_modelica_timeseries(read_timeseries_simulink_loadflow(reference_res_path))
     elif os.path.splitext(reference_res_path)[1] == '.rlf':
         res_ref = convert_neplan_to_modelica_timeseries(read_timeseries_NEPLAN_loadflow(reference_res_path))
-    
+    for res in res_ref:
+        print(res.name)
+        print(res.values)
+
+    print('\n************************ Comparison ****************')    
     res_err = compare_timeseries(res_ref, res_mod)
-    assert_modelia_results(net_name, res_err, threshold)
+
+    print('\n************************ Assertion ****************')    
+    assert_modelica_results(net_name, res_err, threshold)
