@@ -95,13 +95,36 @@ class TimeSeries:
             result_list[ts.name] = ts_shift
 
         return result_list
+
+    @staticmethod
+    def frequency_shift_list(timeseries_list, freqs_list):
+        """ Calculate shifted frequency results of all time series in list by using 
+            the frequency with the same index in the frequency list
+            or the same frequency if there is only one frequency defined.
+        :param timeseries_list: timeseries list retrieved from dpsim results
+        :param freqs_list: frequency or list of frequencies by which the timeseries should be shifted
+        :return: list of shifted time series
+        """
+        if not isinstance(freqs_list, list):
+            result_list = {}
+            for name, ts in timeseries_list.items():
+                ts_shift = ts.frequency_shift(freqs_list)
+                result_list[ts_shift.name] = ts_shift            
+            return result_list
+        else:
+            result_list = {}
+            for ts, freq in zip(timeseries_list, freqs_list):
+                ts_shift = ts.frequency_shift(freq)
+                result_list[ts.name] = ts_shift       
+            return result_list
     
     @staticmethod 
-    def create_emt_from_dp(timeseries_list, freqs_list):
-        """Calculate shifted frequency results of all time series
+    def create_emt_from_dp(timeseries_list, freqs_list, new_name = 'emt_signal'):
+        """ Calculate shifted frequency results of all time series in list
+            and synthesize emt signal by summing them.
         :param timeseries_list: timeseries list retrieved from dpsim results
-        :param freq: frequency by which the timeseries should be shifted
-        :return: list of shifted time series
+        :param freqs_list: frequency or list of frequencies by which the timeseries should be shifted
+        :return: emt equivalent time series
         """
         result = np.zeros_like(timeseries_list[0].values)
 
@@ -109,23 +132,8 @@ class TimeSeries:
             ts_shift = ts.frequency_shift(freq)
             result = result + ts_shift.values
 
-        ts_result = TimeSeries('emt_signal', timeseries_list[0].time, result.real)
-
-        return ts_result
-    
-    @staticmethod
-    def frequency_shift_list(timeseries_list, freq):
-        """Calculate shifted frequency results of all time series
-        :param timeseries_list: timeseries list retrieved from dpsim results
-        :param freq: frequency by which the timeseries should be shifted
-        :return: list of shifted time series
-        """
-        result_list = {}
-        for name, ts in timeseries_list.items():
-            ts_emt = ts.frequency_shift(freq)
-            result_list[ts.name] = ts_emt
-
-        return result_list
+        ts_result = TimeSeries(new_name, timeseries_list[0].time, result.real)
+        return ts_result    
 
     @staticmethod
     def rmse(ts1, ts2):
@@ -176,6 +184,6 @@ class TimeSeries:
         """
         phasor_list = {}
         for name, ts in timeseries_list.items():
-            phasor_list[name] = ts.phasor(name)
+            phasor_list[name] = ts.phasor()
 
         return phasor_list
