@@ -38,7 +38,6 @@ def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
 
     return timeseries
 
-
 def read_timeseries_csv(filename, timeseries_names=None, print_status=True):
     """Reads complex time series data from DPsim log file. Real and
     imaginary part are stored in one complex variable.
@@ -160,19 +159,19 @@ def read_timeseries_PLECS(filename, timeseries_names=None):
 
     return timeseries_list
 
-def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=False):
+def read_timeseries_NEPLAN_loadflow(filename, timeseries_names=None, is_regex=False):
     """
     Read in NEPLAN loadflow result from result file, the result is in angle notation, amplitude and angle are stored
     separately
     To keep consistent with the names of voltage in most cases, the name of voltage variables are changed into '.V*'
     instead of '.U*' as in the result file
 
-    :param file_name: name of the mat file for the loadflow result from neplan
+    :param filename: name of the mat file for the loadflow result from neplan
     :param timeseries_names: column name to be read
     :param is_regex: flag for using regular expression
     :return: list of Timeseries objects
     """
-    str_tmp = open(file_name, "r")  # Read in files
+    str_tmp = open(filename, "r")  # Read in files
     low = 0  # flag for the start of a new data in str_cmp
     high = 0  # flag for the end of this new data in str_cmp
     flag = True  # To judge if this is the first line of the file, which will be the names for the data type
@@ -210,9 +209,9 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
             high += 1
 
         """
-        A typical line current in neplan has two parts from both end, but we doesn't have to calculate them 
-        with the assumption that the topology of the gird should be correct with which we can validate the 
-        current by comparing the voltage of the nodes connected to the ends of the line 
+        A typical line current in neplan has two parts from both end, but we doesn't have to calculate them
+        with the assumption that the topology of the gird should be correct with which we can validate the
+        current by comparing the voltage of the nodes connected to the ends of the line
         """
         if flag is not True:  # flag is true when it's the first line
             if value[3] is not '#':
@@ -254,7 +253,7 @@ def read_timeseries_NEPLAN_loadflow(file_name, timeseries_names=None, is_regex=F
     return timeseries
 
 
-def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex=False):
+def read_timeseries_simulink_loadflow(filename, timeseries_names=None, is_regex=False):
     """
     Read in simulink load-flow result from result file(.rep), the result is in angle notation, amplitude and angle are stored
     separately.
@@ -262,12 +261,12 @@ def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex
         .Arms/.IDegree for current/current angle,
         .Vrms/.VDegree for voltage/voltage angle.
 
-    :param file_name:path of the .rep file for the loadflow result from simulink
+    :param filename:path of the .rep file for the loadflow result from simulink
     :param timeseries_names: specific values to be read
     :param is_regex: flag for using regular expression
     :return: list of Timeseries objects
     """
-    str_tmp = open(file_name, 'r', encoding='latin-1')  # Read in files, using latin-1 to decode /xb0
+    str_tmp = open(filename, 'r', encoding='latin-1')  # Read in files, using latin-1 to decode /xb0
 
     # Read in data from result file of neplan
     name = []  # list for data type names
@@ -318,3 +317,44 @@ def read_timeseries_simulink_loadflow(file_name, timeseries_names=None, is_regex
         del timeseries[line_del[len(line_del) - num_to_del - 1]]
     return timeseries
 
+def read_timeseries_villas(filename):
+    """
+    Read data in "villas.human" format.
+
+    See: https://villas.fein-aachen.org/doc/node-formats.html
+    Format:   seconds.nanoseconds+offset(sequenceno)      value0 value1 ... valueN
+    Example:  1438959964.162102394(6)     3.489760        -1.882725       0.860070
+
+    :param filename: name of the file that contains the data
+    """
+
+    from villas.node.sample import Sample
+
+    with open(filename, 'r') as fp:
+
+        timeseries = [ ]
+        times = [ ]
+        fields = [ ]
+
+        for line in fp.readlines():
+            if line[0] == '#':
+                continue
+
+            sample = Sample.parse(line)
+
+            times.append(sample.ts)
+
+            for index, field in enumerate(sample.values, start=0):
+                if len(fields) <= index:
+                    fields.append([])
+
+                fields[index].append(field)
+
+        for index, field in enumerate(fields):
+            name = 'signal_{}'.format(index)
+
+            series = TimeSeries(name, times, field)
+
+            timeseries.append(series)
+
+        return timeseries
