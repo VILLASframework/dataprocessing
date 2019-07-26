@@ -35,6 +35,15 @@ class TimeSeries:
         ts_phase = TimeSeries(self.name+'_phase', self.time, phase_values)
         return ts_phase
 
+    def real(self):
+        """ get the real part of complex time series.
+        """
+        _real = []
+        for value in self.values:
+            _real.append(np.real(value))
+        ts_real = TimeSeries(self.name+'_real', self.time, _real)
+        return ts_real
+
     def phasor(self):
         """Calculate phasors of complex time series 
             and return dict with absolute value and phase.
@@ -142,6 +151,24 @@ class TimeSeries:
         return np.sqrt((TimeSeries.diff('diff', ts1, ts2).values ** 2).mean())
 
     @staticmethod
+    def max_abs_err(ts1, ts2):
+        """ Calculate max absolute error between two time series
+        """
+        return np.absolute((TimeSeries.diff('diff', ts1, ts2).values)).max()
+
+    @staticmethod
+    def max_rel_abs_err(ts1, ts2):
+        """ Calculate max relative absolute error between two time series objects to the first
+        """
+        return np.absolute(TimeSeries.rel_diff('rel_diff', ts1, ts2).values).max()
+
+    @staticmethod
+    def mean_rel_abs_err(ts1, ts2):
+        """ Calculate mean relative absolute error between two time series objects to the first
+        """
+        return np.absolute(TimeSeries.rel_diff('rel_diff', ts1, ts2).values).mean()
+
+    @staticmethod
     def norm_rmse(ts1, ts2):
         """ Calculate root mean square error between two time series,
         normalized using the mean value of both mean values of ts1 and ts2 
@@ -166,6 +193,16 @@ class TimeSeries:
             interp_vals_ts2 = np.interp(time, ts2.time, ts2.values)
             ts_diff = TimeSeries(name, time, (interp_vals_ts2 - interp_vals_ts1))
         return ts_diff
+    
+    @staticmethod
+    def rel_diff(name, ts1, ts2):
+        """Returns relative difference between two time series objects to the first.
+        """
+        diff_val=TimeSeries.diff('diff', ts1, ts2).values
+        # in case an element in ts1 is zero and the corresponding diff is non-zero
+        rel_diff_to_ts1=np.divide(diff_val, ts1.values, out=np.zeros_like(diff_val), where=ts1.values!=0)
+        ts_rel_diff_to_ts1 = TimeSeries(name, ts1.time, rel_diff_to_ts1)
+        return ts_rel_diff_to_ts1
     
     @staticmethod
     def complex_abs(name, ts_real, ts_imag):
