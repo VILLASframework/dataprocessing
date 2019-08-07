@@ -1,5 +1,6 @@
 import numpy as np
 import cmath
+from scipy.signal import hilbert, chirp
 
 class TimeSeries:
     """Stores data from different simulation sources.
@@ -43,6 +44,15 @@ class TimeSeries:
             _real.append(np.real(value))
         ts_real = TimeSeries(self.name+'_real', self.time, _real)
         return ts_real
+
+    def imag(self):
+        """ get the imaginary part of complex time series.
+        """
+        _imag = []
+        for value in self.values:
+            _imag.append(np.imag(value))
+        ts_imag = TimeSeries(self.name+'_real', self.time, _imag)
+        return ts_imag
 
     def phasor(self):
         """Calculate phasors of complex time series 
@@ -199,8 +209,8 @@ class TimeSeries:
         """Returns relative difference between two time series objects to the first.
         """
         diff_val=TimeSeries.diff('diff', ts1, ts2).values
-        # in case an element in ts1 is zero and the corresponding diff is non-zero
-        rel_diff_to_ts1=np.divide(diff_val, ts1.values, out=np.zeros_like(diff_val), where=ts1.values!=0)
+        # relative error to the max value of ts1
+        rel_diff_to_ts1 = diff_val/ts1.values.max()
         ts_rel_diff_to_ts1 = TimeSeries(name, ts1.time, rel_diff_to_ts1)
         return ts_rel_diff_to_ts1
     
@@ -222,5 +232,15 @@ class TimeSeries:
         phasor_list = {}
         for name, ts in timeseries_list.items():
             phasor_list[name] = ts.phasor()
-
         return phasor_list
+
+    @staticmethod
+    def instFrequency(ts):
+        duration = ts.time.max()
+        samples = ts.time.size
+        sampling_freq = samples / duration
+        analytic_signal = hilbert(ts.abs().values)
+        instaneous_phase=np.unwrap(np.angle(analytic_signal))
+        instantaneous_frequency = (np.diff(instaneous_phase) / (2.0 * np.pi) * sampling_freq)
+        ts_instFreq=TimeSeries(str(ts.name + "instFreq"), ts.time[:-1], instantaneous_frequency)
+        return ts_instFreq
