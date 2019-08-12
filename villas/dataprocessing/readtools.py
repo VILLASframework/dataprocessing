@@ -335,9 +335,11 @@ def read_timeseries_villas(filename):
         timeseries = [ ]
         times = [ ]
         fields = [ ]
+        names = [ ]
 
         for line in fp.readlines():
             if line[0] == '#':
+                names = line.split()[2:]
                 continue
 
             sample = Sample.parse(line)
@@ -351,7 +353,10 @@ def read_timeseries_villas(filename):
                 fields[index].append(field)
 
         for index, field in enumerate(fields):
-            name = 'signal_{}'.format(index)
+            if len(names) <= index:
+                name = names[index]
+            else:
+                name = 'signal_{}'.format(index)
 
             series = TimeSeries(name, times, field)
 
