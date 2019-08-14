@@ -120,21 +120,23 @@ def read_dpsim_log(log_path):
     log_sections = {'init':[], 'none':[], 'sysmat_stamp':[], 'sysmat_final':[], 'sourcevec_stamp':[], 'sourcevec_final':[], 'ludecomp':[]}
     section = 'init'
     for line_pos in range(len(log_lines)):
-        if re.search('DEBUG: Stamping .+ into system matrix:', log_lines[line_pos]):
+        if re.search('\[D\] Stamping .+ into system matrix:', log_lines[line_pos]):
             section = 'sysmat_stamp'
-        elif re.search('INFO: System matrix:', log_lines[line_pos]):
+        elif re.search('[I] System matrix:', log_lines[line_pos]):
             section = 'sysmat_final'
-        elif re.search('DEBUG: Stamping .+ into source vector:', log_lines[line_pos]):
+        elif re.search('\[D\] Stamping .+ into source vector:', log_lines[line_pos]):
             section = 'sourcevec_stamp'
-        elif re.search('INFO: Right side vector:', log_lines[line_pos]):
+        elif re.search('\[I\] Right side vector:', log_lines[line_pos]):
             section = 'sourcevec_final'
-        elif re.search('INFO: LU decomposition:', log_lines[line_pos]):
+        elif re.search('\[I\] LU decomposition:', log_lines[line_pos]):
             section = 'ludecomp'
-        elif re.search('INFO: Number of network simulation nodes:', log_lines[line_pos]):
+        elif re.search('\[I\] Number of network simulation nodes:', log_lines[line_pos]):
             section = 'none'
-        elif re.search('INFO: Added .+ to simulation.', log_lines[line_pos]):
+        elif re.search('\[I\] Added .+ to simulation.', log_lines[line_pos]):
             section = 'none'
-        elif re.search('INFO: Initial switch status:', log_lines[line_pos]):
+        elif re.search('\[I\] Initial switch status:', log_lines[line_pos]):
+            section = 'none'
+        elif re.search('\[(.*?)\]', log_lines[line_pos]):
             section = 'none'
         log_sections[section].append(line_pos)
 
