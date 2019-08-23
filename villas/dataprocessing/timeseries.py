@@ -69,6 +69,16 @@ class TimeSeries:
 
         return fft_freqs[:freqs_num], np.abs(fft_values[:freqs_num])/freqs_num
 
+    def interpolate(self, timestep):
+        """ Interpolates timeseries with new timestep
+        :param timestep:
+        :return:
+        """
+        interpl_time = np.arange(self.time[0], self.time[-1], timestep)
+        values = np.interp(interpl_time, self.time, self.values)
+        ts_return = TimeSeries(self.name+'_intpl', interpl_time, values)
+        return ts_return
+
     def interpolate_cmpl(self, timestep):
         """ Interpolates complex timeseries with new timestep
         :param timestep:
@@ -116,6 +126,18 @@ class TimeSeries:
                 ts_shift = ts.frequency_shift(freq)
                 result_list[ts.name] = ts_shift       
             return result_list
+
+    @staticmethod
+    def interpolate_list(timeseries_list, timestep):
+        """ Interpolates timeseries list with new timestep
+        :param timestep:
+        :return:
+        """
+        result_list = {}
+        for name, ts in timeseries_list.items():
+            ts_intp = ts.interpolate(timestep)
+            result_list[ts_intp.name] = ts_intp     
+        return result_list
 
     @staticmethod
     def interpolate_cmpl_list(timeseries_list, timestep):
