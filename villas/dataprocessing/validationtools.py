@@ -163,7 +163,7 @@ def assert_modelica_results(net_name, error, threshold):
     :return: outputs to command line which are the results of the assert
     """
     if not error:
-        raise ValueError("No error values available. Model assertion can not be performed!)
+        raise ValueError("No error values available. Model assertion can not be performed!")
     else:
         print("%i error values available. Comparing with threshold..." % len(error))
 
