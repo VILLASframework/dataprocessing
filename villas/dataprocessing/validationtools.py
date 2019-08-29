@@ -162,6 +162,11 @@ def assert_modelica_results(net_name, error, threshold):
     :param simulink_res: timeseries of reference result
     :return: outputs to command line which are the results of the assert
     """
+    if not error:
+        raise ValueError("No error values available. Model assertion can not be performed!)
+    else:
+        print("%i error values available. Comparing with threshold..." % len(error))
+
     fail_list = []  # List for all the failed test
     for name in error.keys():
         if abs(error[name]) > threshold:
