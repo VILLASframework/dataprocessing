@@ -84,8 +84,8 @@ def convert_simulink_to_standard_timeseries(simseri):
     for check in range(len(simseri)):
         if 'U AB:' in simseri[check].name:
             simseri[check].name = simseri[check].name.replace('U AB:', '')
-            simseri[check].name = simseri[check].name.replace('Vrms', v_abs_std_suffix)
-            simseri[check].name = simseri[check].name.replace('VDegree', v_angle_std_suffix)
+            simseri[check].name = simseri[check].name.replace('.Vrms', v_abs_std_suffix)
+            simseri[check].name = simseri[check].name.replace('.VDegree', v_angle_std_suffix)
             simseri[check].name = simseri[check].name.replace(' ', '')
             simseri[check].name = simseri[check].name.replace('_', '')
             if 'Vangle' in simseri[check].name:
