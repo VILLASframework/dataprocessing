@@ -1,6 +1,6 @@
 import numpy as np
 import cmath
-from scipy.signal import hilbert, chirp
+from scipy.signal import hilbert, find_peaks
 
 class TimeSeries:
     """Stores data from different simulation sources.
@@ -10,7 +10,10 @@ class TimeSeries:
         self.time = np.array(time)
         self.values = np.array(values)
         self.name = name
-        self.label = name
+        if not label:
+            self.label = name
+        else:
+            self.label = label
 
     def scale(self, factor):
         """Returns scaled timeseries.
@@ -18,13 +21,22 @@ class TimeSeries:
         ts_scaled = TimeSeries(self.name+'_scl', self.time, self.values * factor)
         return ts_scaled
 
+    def slice_ts(self, start_time, end_time):
+        time_step=self.time[1]-self.time[0]
+        start_index=int(start_time/time_step)
+        end_index=int(end_time/time_step)
+        slice_time=self.time[start_index:end_index]
+        slice_values=self.values[start_index:end_index]
+        ts_slice=TimeSeries(self.name+'_slice', slice_time, slice_values)
+        return ts_slice
+
     def abs(self):
         """ Calculate absolute value of complex time series.
         """
         abs_values = []
         for value in self.values:
             abs_values.append(np.abs(value))
-        ts_abs = TimeSeries(self.name+'_abs', self.time, abs_values)
+        ts_abs = TimeSeries(self.name+'_abs', self.time, abs_values, self.label+'_abs')
         return ts_abs
 
     def phase(self):
@@ -33,7 +45,7 @@ class TimeSeries:
         phase_values = []
         for value in self.values:
             phase_values.append(np.angle(value, deg=True))
-        ts_phase = TimeSeries(self.name+'_phase', self.time, phase_values)
+        ts_phase = TimeSeries(self.name+'_phase', self.time, phase_values, self.label+'_phase')
         return ts_phase
 
     def real(self):
@@ -239,8 +251,20 @@ class TimeSeries:
         duration = ts.time.max()
         samples = ts.time.size
         sampling_freq = samples / duration
-        analytic_signal = hilbert(ts.abs().values)
+        analytic_signal = hilbert(ts.values)
         instaneous_phase=np.unwrap(np.angle(analytic_signal))
         instantaneous_frequency = (np.diff(instaneous_phase) / (2.0 * np.pi) * sampling_freq)
         ts_instFreq=TimeSeries(str(ts.name + "instFreq"), ts.time[:-1], instantaneous_frequency)
         return ts_instFreq
+
+    @staticmethod
+    def getPeaks(ts, nom, tolerance):
+        peaks_, properties_ = find_peaks(ts.values, height=nom+tolerance)
+        ts_peaks=TimeSeries(str(ts.name+".peaks"), ts.time[peaks_], ts.values[peaks_])
+        return ts_peaks
+
+    @staticmethod
+    def getDeviation(ts, nom, tolerance):
+        dev_=np.where(np.abs(ts.abs().values-nom)>tolerance)
+        ts_dev=TimeSeries(str(ts.name+".peaks"), ts.time[dev_], ts.values[dev_])
+        return ts_dev
