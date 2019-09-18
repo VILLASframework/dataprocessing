@@ -27,6 +27,7 @@ setup(
     author = 'Markus Mirz, Jan Dinkelbach, Steffen Vogel',
     author_email = 'acs-software@eonerc.rwth-aachen.de',
     description = 'Several tools for processing simulation results',
+    long_description_content_type='text/markdown',
     license = 'GPL-3.0',
     keywords = 'simulation power system real-time data processing',
     url = 'https://git.rwth-aachen.de/acs/public/villas/dataprocessing',
