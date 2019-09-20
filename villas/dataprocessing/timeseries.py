@@ -21,13 +21,17 @@ class TimeSeries:
         ts_scaled = TimeSeries(self.name+'_scl', self.time, self.values * factor)
         return ts_scaled
 
-    def slice_ts(self, start_time, end_time):
+    def slice_ts(self, start_time, end_time, reindex=False):
         time_step=self.time[1]-self.time[0]
         start_index=int(start_time/time_step)
         end_index=int(end_time/time_step)
-        slice_time=self.time[start_index:end_index]
+        if reindex:
+            slice_time=self.time[0 : int((end_time-start_time)/time_step)]
+        else:
+            slice_time=self.time[start_index:end_index]
+
         slice_values=self.values[start_index:end_index]
-        ts_slice=TimeSeries(self.name+'_slice', slice_time, slice_values)
+        ts_slice=TimeSeries(self.name+'_slice', slice_time, slice_values, self.label)
         return ts_slice
 
     def abs(self):
