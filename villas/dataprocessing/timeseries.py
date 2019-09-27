@@ -29,8 +29,9 @@ class TimeSeries:
             slice_time=self.time[0 : int((end_time-start_time)/time_step)]
         else:
             slice_time=self.time[start_index:end_index]
-
         slice_values=self.values[start_index:end_index]
+        if(isinstance(slice_values[0], str)):
+            slice_values = [float(v_) for v_ in slice_values]
         ts_slice=TimeSeries(self.name+'_slice', slice_time, slice_values, self.label)
         return ts_slice
 
