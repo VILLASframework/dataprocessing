@@ -223,7 +223,9 @@ class TimeSeries:
     
     @staticmethod
     def rel_diff(name, ts1, ts2):
-        """Returns relative difference between two time series objects to the first.
+        """
+        Returns relative difference between two time series objects to the first.
+        calculated against the max of ts1.
         """
         diff_val=TimeSeries.diff('diff', ts1, ts2).values
         # relative error to the max value of ts1

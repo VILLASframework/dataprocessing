@@ -4,7 +4,7 @@ from .timeseries import *
 import scipy.signal as signal
 
 
-def plot_timeseries(figure_id, timeseries, marker='None', plt_linestyle='-', plt_linewidth=2, plt_color=None, plt_legend_loc='lower right', plt_legend=True, inlineLabel = False):
+def plot_timeseries(figure_id, timeseries, marker='None', plt_linestyle='-', plt_linewidth=2, plt_color=None, plt_legend_loc='lower right', plt_legend=True, inlineLabel = False, inlinLabelPos=[-1,-1]):
     """
     This function plots either a single timeseries or several timeseries in the figure defined by figure_id.
     Several timeseries (handed over in a list) are plotted in several subplots.
@@ -30,7 +30,7 @@ def plot_timeseries(figure_id, timeseries, marker='None', plt_linestyle='-', plt
             if(plt_legend):
                 plt.legend()
     if(inlineLabel):
-        plt.text(timeseries.time[-1], timeseries.values[-1], timeseries.label)
+        plt.text(timeseries.time[inlinLabelPos[0]], timeseries.values[inlinLabelPos[1]], timeseries.label)
 
 
 def set_timeseries_labels(timeseries, timeseries_labels):
