@@ -84,8 +84,8 @@ def convert_simulink_to_standard_timeseries(simseri):
     for check in range(len(simseri)):
         if 'U AB:' in simseri[check].name:
             simseri[check].name = simseri[check].name.replace('U AB:', '')
-            simseri[check].name = simseri[check].name.replace('Vrms', v_abs_std_suffix)
-            simseri[check].name = simseri[check].name.replace('VDegree', v_angle_std_suffix)
+            simseri[check].name = simseri[check].name.replace('.Vrms', v_abs_std_suffix)
+            simseri[check].name = simseri[check].name.replace('.VDegree', v_angle_std_suffix)
             simseri[check].name = simseri[check].name.replace(' ', '')
             simseri[check].name = simseri[check].name.replace('_', '')
             if 'Vangle' in simseri[check].name:
@@ -162,6 +162,11 @@ def assert_modelica_results(net_name, error, threshold):
     :param simulink_res: timeseries of reference result
     :return: outputs to command line which are the results of the assert
     """
+    if not error:
+        raise ValueError("No error values available. Model assertion can not be performed!")
+    else:
+        print("%i error values available. Comparing with threshold..." % len(error))
+
     fail_list = []  # List for all the failed test
     for name in error.keys():
         if abs(error[name]) > threshold:
