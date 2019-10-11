@@ -184,16 +184,18 @@ class TimeSeries:
         return np.absolute((TimeSeries.diff('diff', ts1, ts2).values)).max()
 
     @staticmethod
-    def max_rel_abs_err(ts1, ts2):
+    def max_rel_abs_err(ts1, ts2, normalize = None, avoid_zero = False, threshold = 0):
         """ Calculate max relative absolute error between two time series objects to the first
         """
-        return np.absolute(TimeSeries.rel_diff('rel_diff', ts1, ts2).values).max()
+        return np.absolute(TimeSeries.rel_diff('rel_diff', ts1, ts2,\
+             normalize = None, avoid_zero = False, threshold = 0).values).max()
 
     @staticmethod
-    def mean_rel_abs_err(ts1, ts2):
+    def mean_rel_abs_err(ts1, ts2, normalize = None, avoid_zero = False, threshold = 0):
         """ Calculate mean relative absolute error between two time series objects to the first
         """
-        return np.absolute(TimeSeries.rel_diff('rel_diff', ts1, ts2).values).mean()
+        return np.absolute(TimeSeries.rel_diff('rel_diff', ts1, ts2,\
+            normalize = None, avoid_zero = False, threshold = 0).values).mean()
 
     @staticmethod
     def norm_rmse(ts1, ts2):
@@ -222,15 +224,29 @@ class TimeSeries:
         return ts_diff
     
     @staticmethod
-    def rel_diff(name, ts1, ts2):
+    def rel_diff(name, ts1, ts2, normalize = None, avoid_zero = False, threshold = 0):
         """
         Returns relative difference between two time series objects to the first.
         calculated against the max of ts1.
         """
-        diff_val=TimeSeries.diff('diff', ts1, ts2).values
+        if normalize is not None:
+            diff_val=TimeSeries.diff('diff', ts1, ts2).values
+            rel_diff_to_ts1 = diff_val/normalize
+            ts_rel_diff_to_ts1 = TimeSeries(name, ts1.time, rel_diff_to_ts1)
+            return ts_rel_diff_to_ts1
         # relative error to the max value of ts1
-        rel_diff_to_ts1 = diff_val/ts1.values.max()
-        ts_rel_diff_to_ts1 = TimeSeries(name, ts1.time, rel_diff_to_ts1)
+        if not avoid_zero:
+            diff_val=TimeSeries.diff('diff', ts1, ts2).values
+            rel_diff_to_ts1 = diff_val/ts1.values.max()
+            ts_rel_diff_to_ts1 = TimeSeries(name, ts1.time, rel_diff_to_ts1)
+        else:
+            index_=np.where(np.abs(ts1.values)>threshold)
+            ts1_filtered_val_=ts1.values[index_]
+            ts1_filtered_time_=ts1.time[index_]
+            ts2_filtered_val_=ts2.values[index_]
+            diff_val=TimeSeries.diff('diff', ts1_filtered_val_, ts2_filtered_val_).values
+            rel_diff_to_ts1 = diff_val/ts1_filtered_val_.values
+            ts_rel_diff_to_ts1 = TimeSeries(name, ts1_filtered_time_, rel_diff_to_ts1)
         return ts_rel_diff_to_ts1
     
     @staticmethod
