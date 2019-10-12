@@ -117,12 +117,11 @@ def read_dpsim_log(log_path):
     log_file.close()
 
     # Sectionize
-    log_sections = {'init':[], 'none':[], 'sysmat_stamp':[], 'sysmat_final':[], 'sourcevec_stamp':[], 'sourcevec_final':[], 'ludecomp':[]}
-    section = 'init'
+    log_sections = {'none':[], 'nodenumbers':[], 'sysmat_stamp':[], 'sysmat_final':[], 'sourcevec_stamp':[], 'sourcevec_final':[], 'ludecomp':[]}
     for line_pos in range(len(log_lines)):
         if re.search('\[D\] Stamping .+ into system matrix:', log_lines[line_pos]):
             section = 'sysmat_stamp'
-        elif re.search('[I] System matrix:', log_lines[line_pos]):
+        elif re.search('\[I\] System matrix:', log_lines[line_pos]):
             section = 'sysmat_final'
         elif re.search('\[D\] Stamping .+ into source vector:', log_lines[line_pos]):
             section = 'sourcevec_stamp'
@@ -130,8 +129,8 @@ def read_dpsim_log(log_path):
             section = 'sourcevec_final'
         elif re.search('\[I\] LU decomposition:', log_lines[line_pos]):
             section = 'ludecomp'
-        elif re.search('\[I\] Number of network simulation nodes:', log_lines[line_pos]):
-            section = 'none'
+        elif re.search('\[I\] Number of network (and virtual )?nodes:', log_lines[line_pos]):
+            section = 'nodenumbers'
         elif re.search('\[I\] Added .+ to simulation.', log_lines[line_pos]):
             section = 'none'
         elif re.search('\[I\] Initial switch status:', log_lines[line_pos]):
