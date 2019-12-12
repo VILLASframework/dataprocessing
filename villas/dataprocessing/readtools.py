@@ -5,6 +5,10 @@ import numpy as np
 import pandas as pd
 import re
 from .timeseries import *
+from scipy.io import loadmat
+from os.path import splitext
+import csv
+
 
 
 def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
@@ -364,3 +368,31 @@ def read_timeseries_villas(filename):
             timeseries.append(series)
 
         return timeseries
+
+
+def read_timeseries_matpower(input_mat, mapping_conf):
+    input_map = csv.reader(open(mapping_conf))
+    headers = next(input_map, None)
+    map = {}
+    for row in input_map:
+        k, v = row
+        k = int(k)
+        map[k] = v
+
+    data = loadmat(input_mat, struct_as_record=True)
+    rootname, extension = splitext(input_mat)
+    rootname = rootname.split("/")[-1]
+    busses = data[rootname]['bus'][0][0]
+
+    if len(busses) != len(map):
+        print ("numbers of busses in mapping differs from number of busses in .mat")
+        return
+
+
+    timeseries = []
+    timeseries_names = [(map[int(bus[0])] + ".V") for bus in busses]
+    values = [bus[7] * bus[9] for bus in busses]
+    for i in range(0, len(timeseries_names)):
+        timeseries.append(TimeSeries(timeseries_names[i], 0, values[i]))
+
+    return timeseries
