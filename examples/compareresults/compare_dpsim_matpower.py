@@ -34,7 +34,7 @@ for ts,values in ts_dpsim.items():
 print('************************ reading dpsim power flow data end ****************')
 
 # Converting both timeseries objects to a common format and afterwards compare and assert the results
-net_name='CIGRE_MV_NoTap'
+net_name='Case9'
 threshold=0.5
 
 print('************************ convert dpsim to standard start  ****************')
