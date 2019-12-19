@@ -7,7 +7,7 @@ import os
 # Path to mpc result file (power flow result in *.mat format)
 mpc_result_file = os.getcwd() + "/../sampledata/rescase9.mat"
 # Path to DPsim result file (power flow result in *.csv format)
-dpsim_result_file = os.getcwd() + "/../sampledata/CIGRE-MV-NoTap.csv"
+dpsim_result_file = os.getcwd() + "/../sampledata/case9.csv"
 print (mpc_result_file)
 
 
@@ -16,7 +16,7 @@ print (mpc_mapping_file)
 
 
 
-# Read mpc files
+# Read mpc files9B70998E-2283-11EA-998E-000000000000.V
 print('************************ reading mpc power flow data start ****************')
 mpc_objects = read_timeseries_matpower(mpc_result_file, mpc_mapping_file)
 for obj in mpc_objects:
