@@ -143,8 +143,6 @@ def compare_timeseries(ts1, ts2):
                 else:
                     timeseries_error.append(TimeSeries.rmse(ts2[j], ts1[i])/ts1[i].values[0])
 
-                print(ts1[i].name)
-                print(timeseries_error[len(timeseries_error) - 1])
                 flag_found = True
         if flag_found is False:
             # No such variable in Modelica model, set the error to -1
