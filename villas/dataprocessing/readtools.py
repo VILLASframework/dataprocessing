@@ -381,7 +381,7 @@ def read_timeseries_matpower(input_mat, mapping_conf):
 
     data = loadmat(input_mat, struct_as_record=True)
     rootname, extension = splitext(input_mat)
-    rootname = rootname.split("/")[-1]
+    rootname = rootname.split("\\")[-1]
     busses = data[rootname]['bus'][0][0]
 
 
@@ -392,7 +392,7 @@ def read_timeseries_matpower(input_mat, mapping_conf):
 
     timeseries = []
     timeseries_names = [(map[int(bus[0])] + ".V.V") for bus in busses]
-    values = [bus[7] * bus[9] for bus in busses]
+    values = [bus[7] * bus[9] * 1000 for bus in busses]
     for i in range(0, len(timeseries_names)):
         timeseries.append(TimeSeries(timeseries_names[i], [0], [values[i]]))
 
