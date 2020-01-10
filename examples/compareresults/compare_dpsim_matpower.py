@@ -2,17 +2,20 @@ from villas.dataprocessing.readtools import *
 from villas.dataprocessing.timeseries import *
 import villas.dataprocessing.validationtools as validationtools
 import os
-import os
+
+os.chdir(os.path.dirname(__file__))
 
 # Path to mpc result file (power flow result in *.mat format)
-mpc_result_file = os.getcwd() + "/../sampledata/rescase9.mat"
+mpc_result_file = os.path.abspath(os.path.join(os.getcwd(),"../sampledata/case145results.mat"))
+print(mpc_result_file)
+
 # Path to DPsim result file (power flow result in *.csv format)
-dpsim_result_file = os.getcwd() + "/../sampledata/case9.csv"
-print (mpc_result_file)
+dpsim_result_file = os.path.abspath(os.path.join(os.getcwd(),"../sampledata/case145.csv"))
+print(dpsim_result_file)
 
 
-mpc_mapping_file = os.getcwd() + "/../sampledata/mapping_busID_uuid.csv"
-print (mpc_mapping_file)
+mpc_mapping_file = os.path.abspath(os.path.join(os.getcwd(),"../sampledata/case145_mapping_busID_uuid.csv"))
+print(mpc_mapping_file)
 
 
 
@@ -34,7 +37,7 @@ for ts,values in ts_dpsim.items():
 print('************************ reading dpsim power flow data end ****************')
 
 # Converting both timeseries objects to a common format and afterwards compare and assert the results
-net_name='Case9'
+net_name='Case9' # TODO: fix
 threshold=0.5
 
 print('************************ convert dpsim to standard start  ****************')
