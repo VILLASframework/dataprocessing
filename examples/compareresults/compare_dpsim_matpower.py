@@ -5,9 +5,9 @@ import os
 import os
 
 # Path to mpc result file (power flow result in *.mat format)
-mpc_result_file = os.getcwd() + "/../sampledata/rescase9.mat"
+mpc_result_file = os.getcwd() + "/../sampledata/case300results.mat"
 # Path to DPsim result file (power flow result in *.csv format)
-dpsim_result_file = os.getcwd() + "/../sampledata/case9.csv"
+dpsim_result_file = os.getcwd() + "/../sampledata/case300.csv"
 print (mpc_result_file)
 
 
@@ -21,7 +21,7 @@ print('************************ reading mpc power flow data start **************
 mpc_objects = read_timeseries_matpower(mpc_result_file, mpc_mapping_file)
 for obj in mpc_objects:
     print('%s is %s' % (obj.name, obj.values)) # result as list of TimeSeries
-print('************************ reading neplan power flow data end ****************')
+print('************************ reading mpc power flow data end ****************')
 print('\n')
 
 # Read in DPsim powerflow results
@@ -37,6 +37,13 @@ print('************************ reading dpsim power flow data end **************
 net_name='Case9'
 threshold=0.5
 
+print('************************ convert mpc to standard start  ****************')
+ts_mpcList=validationtools.convert_mpc_to_standard_timeseries(mpc_objects)
+for i in range(len(ts_mpcList)):
+    print(ts_mpcList[i].name)
+    print(ts_mpcList[i].values)
+print('************************ convert mpc to standard end  ****************')
+
 print('************************ convert dpsim to standard start  ****************')
 ts_dpsimList=validationtools.convert_dpsim_to_standard_timeseries(ts_dpsim)
 for i in range(len(ts_dpsimList)):
@@ -45,7 +52,7 @@ for i in range(len(ts_dpsimList)):
 print('************************ convert dpsim to standard end  ****************')
 
 print('************************ comparison and assertion start  ****************')
-res_err=validationtools.compare_timeseries(mpc_objects,ts_dpsimList)
+res_err=validationtools.compare_timeseries(ts_mpcList,ts_dpsimList)
 validationtools.assert_modelica_results(net_name,res_err,threshold)
 print('************************ comparison and assertion end  ****************')
 
