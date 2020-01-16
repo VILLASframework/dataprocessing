@@ -45,5 +45,5 @@ print('************************ convert dpsim to standard end  ****************'
 
 print('************************ comparison and assertion start  ****************')
 res_err=validationtools.compare_timeseries(res_ref,ts_dpsimList)
-validationtools.assert_modelica_results(net_name,res_err,threshold)
+validationtools.assert_results(net_name,res_err,threshold)
 print('************************ comparison and assertion end  ****************')

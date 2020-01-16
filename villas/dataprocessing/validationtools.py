@@ -176,7 +176,7 @@ def compare_timeseries(ts1, ts2):
     return dict(zip(timeseries_names, timeseries_error))
 
 
-def assert_modelica_results(net_name, error, threshold):
+def assert_results(net_name, error, threshold):
     """
     assert the result data of a net.
     :param net_name: name of the network
@@ -233,4 +233,4 @@ def validate_modelica_res(net_name, modelica_res_path, reference_res_path, thres
     res_err = compare_timeseries(res_ref, res_mod)
 
     print('\n************************ Assertion ****************')    
-    assert_modelica_results(net_name, res_err, threshold)
+    assert_results(net_name, res_err, threshold)
