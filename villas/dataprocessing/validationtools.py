@@ -4,6 +4,7 @@
 import os
 
 from .readtools import *
+import math
 
 """
 The validationtools are used to validate the simulate results from the model.
@@ -103,8 +104,13 @@ def convert_mpc_to_standard_timeseries(mpc_timeseries):
     ts_mpcList=[]
     for ts in mpc_timeseries:
         new_values = []
-        for value in ts.values:
-            new_values.append(value*1000)
+        if(ts.name.endswith(".V")):
+            for value in ts.values:
+                new_values.append(value*1000)
+        else:
+            "angle should be unchanged"
+            for value in ts.values:
+                new_values.append(math.radians(value))
 
         ts_mpcList.append(TimeSeries(ts.name,ts.time, new_values))
     return ts_mpcList

@@ -397,7 +397,14 @@ def read_timeseries_matpower(input_mat, mapping_conf):
     timeseries = []
     timeseries_names = [(map[int(bus[0])] + ".V.V") for bus in busses]
     values = [bus[7] * bus[9] for bus in busses]
+    angle = [bus[8] for bus in busses]
     for i in range(0, len(timeseries_names)):
-        timeseries.append(TimeSeries(timeseries_names[i], [0], [values[i]]))
+        timeseries.append(TimeSeries(timeseries_names[i], [0],[values[i]]))
+        angle_name = timeseries_names[i] + "angle"
+        timeseries.append(TimeSeries(timeseries_names[i] + "angle", [0], [angle[i]]))
+
+        #timeseries.append(TimeSeries(timeseries_names[i], [0], [values[i]]))
+        #timeseries.append(TimeSeries(timeseries_names[i], [0], [angle[i]]))
+
 
     return timeseries
