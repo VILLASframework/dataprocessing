@@ -382,12 +382,12 @@ def read_timeseries_matpower(input_mat, mapping_conf):
 
     data = loadmat(input_mat, struct_as_record=True)
     rootname, extension = splitext(input_mat)
+
     if os.name == 'nt':
         rootname = rootname.split("\\")[-1]
-    else:
-        rootname = rootname.split("/")[-1]
+    else:	
+        rootname = rootname.rsplit('/', 1)[-1]
     busses = data[rootname]['bus'][0][0]
-
 
     if len(busses) != len(map):
         print ("numbers of busses in mapping differs from number of busses in .mat")
