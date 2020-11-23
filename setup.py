@@ -23,7 +23,7 @@ def read(fname):
 
 setup(
     name = 'villas-dataprocessing',
-    version = '0.2.6',
+    version = '0.3.0',
     author = 'Markus Mirz, Jan Dinkelbach, Steffen Vogel',
     author_email = 'acs-software@eonerc.rwth-aachen.de',
     description = 'Several tools for processing simulation results',
@@ -31,7 +31,7 @@ setup(
     license = 'GPL-3.0',
     keywords = 'simulation power system real-time data processing',
     url = 'https://git.rwth-aachen.de/acs/public/villas/dataprocessing',
-    packages = [ 'villas.dataprocessing' ],
+    packages = [ 'villas.dataprocessing', 'villas.web' ],
     long_description = read('README.md'),
     classifiers = [
         'Development Status :: 4 - Beta',
@@ -47,6 +47,8 @@ setup(
         'numpy',
         'pandas',
         'scipy'
+        'requests',
+        'python-dateutil'
     ],
     setup_requires = [
         'm2r',
