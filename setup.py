@@ -31,7 +31,7 @@ setup(
     license = 'GPL-3.0',
     keywords = 'simulation power system real-time data processing',
     url = 'https://git.rwth-aachen.de/acs/public/villas/dataprocessing',
-    packages = [ 'villas.dataprocessing' ],
+    packages = [ 'villas.dataprocessing', 'villas.web' ],
     long_description = read('README.md'),
     classifiers = [
         'Development Status :: 4 - Beta',
@@ -45,7 +45,8 @@ setup(
     install_requires = [
         'matplotlib',
         'numpy',
-        'pandas'
+        'pandas',
+        'requests'
     ],
     setup_requires = [
         'm2r',
