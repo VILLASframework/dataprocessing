@@ -4,8 +4,29 @@
 import numpy as np
 import pandas as pd
 import re
+import scipy.io as sio
 from .timeseries import *
 
+
+def read_timeseries_PSAT(filename, timeseries_names=None, print_status=True):
+    var_names_mat = sio.loadmat(filename)['Varname']['uvars']
+    var_out_mat = sio.loadmat(filename)['Varout']['vars']
+    var_time_mat = sio.loadmat(filename)['Varout']['t']
+
+    var_names = [var_names_mat[0][0][:][i][0][0] for i in range(len(var_names_mat[0][0][:]))]
+    times = [var_time_mat[0][0][i][0] for i in range(len(var_time_mat[0][0]))]
+    
+    timeseries_dict = {}
+    for name in timeseries_names:
+        values = [var_out_mat[0][0][i][var_names.index(name)] for i in range(len(var_out_mat[0][0]))]
+        timeseries_dict[name] = TimeSeries(name, times, values)
+    
+    if print_status :
+        print('column number: ' + str(len(timeseries_dict)))
+        print('results length: ' + str(len(times)))
+        print('timeseries names: ' + str(timeseries_dict.keys()))
+    
+    return timeseries_dict
 
 def read_timeseries_Modelica(filename, timeseries_names=None, is_regex=False):
     from modelicares import SimRes
@@ -196,7 +217,7 @@ def read_timeseries_NEPLAN_loadflow(filename, timeseries_names=None, is_regex=Fa
         # read in different data and start processing
         for letter in line:
             if letter == "	" or letter == "\n":  # different data(separated by '	') or end(/n)
-                if low is not high:  # if low is equal to high, no data read in
+                if low != high:  # if low is equal to high, no data read in
                     if flag:  # first line of the file, list for data-type name
                         seq.append(line[low:high])
                     else:  # not first line of the file,list for data
@@ -214,8 +235,8 @@ def read_timeseries_NEPLAN_loadflow(filename, timeseries_names=None, is_regex=Fa
         with the assumption that the topology of the gird should be correct with which we can validate the
         current by comparing the voltage of the nodes connected to the ends of the line
         """
-        if flag is not True:  # flag is true when it's the first line
-            if value[3] is not '#':
+        if flag != True:  # flag is true when it's the first line
+            if value[3] != '#':
                 for m in range(6):
                     timeseries.append(TimeSeries(value[3] + '.' + namelist[m],
                                                  np.array([0., 1.]), np.array([value[m + 6], value[m + 6]])))

@@ -45,7 +45,8 @@ setup(
     install_requires = [
         'matplotlib',
         'numpy',
-        'pandas'
+        'pandas',
+        'scipy'
     ],
     setup_requires = [
         'm2r',
