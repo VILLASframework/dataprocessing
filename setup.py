@@ -1,4 +1,5 @@
-import os, re
+import os
+import re
 from setuptools import setup
 
 def cleanhtml(raw_html):
@@ -46,7 +47,7 @@ setup(
         'matplotlib',
         'numpy',
         'pandas',
-        'scipy'
+        'scipy',
         'requests',
         'python-dateutil'
     ],
