@@ -24,7 +24,7 @@ def read(fname):
 
 setup(
     name = 'villas-dataprocessing',
-    version = '0.3.0',
+    version = '0.3.1',
     author = 'Markus Mirz, Jan Dinkelbach, Steffen Vogel',
     author_email = 'acs-software@eonerc.rwth-aachen.de',
     description = 'Several tools for processing simulation results',
