@@ -29,7 +29,7 @@ setup(
     author_email = 'acs-software@eonerc.rwth-aachen.de',
     description = 'Several tools for processing simulation results',
     long_description_content_type='text/markdown',
-    license = 'GPL-3.0',
+    license = 'Apache-2.0',
     keywords = 'simulation power system real-time data processing',
     url = 'https://git.rwth-aachen.de/acs/public/villas/dataprocessing',
     packages = [ 'villas.dataprocessing', 'villas.web' ],
@@ -37,7 +37,7 @@ setup(
     classifiers = [
         'Development Status :: 4 - Beta',
         'Topic :: Scientific/Engineering',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX :: Linux',
