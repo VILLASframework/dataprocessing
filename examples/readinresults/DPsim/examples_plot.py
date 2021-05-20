@@ -1,7 +1,7 @@
 from dataprocessing.dpsim import *
 from dataprocessing.plottools import *
 
-path = 'D:\\path\\to\\logs\\'
+path = 'path'
 logName = 'simulation_name_LeftVector'
 logFilename = path + logName + '.csv'
 

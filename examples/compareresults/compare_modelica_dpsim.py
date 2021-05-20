@@ -3,8 +3,8 @@ from dataprocessing.plottools import *
 import matplotlib.pyplot as plt
 from plottingtools.config import *
 
-current_emt_mod = read_timeseries_Modelica(r"\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\SynchronousGenerator\EMT\UnitTest_Kundur_FullModel_Euler_1us.mat", ["synchronousGenerator_Park.i[1]"]) # Note: both results include only one damper winding in q axis
-current_emt_dpsim = read_timeseries_dpsim_real(r"\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\SynchronousGenerator\EMT\DPsim\UnitTest_FullModel_Trap_1us\data_j.csv")[0]
+current_emt_mod = read_timeseries_Modelica(r"UnitTest_Kundur_FullModel_Euler_1us.mat", ["synchronousGenerator_Park.i[1]"]) # Note: both results include only one damper winding in q axis
+current_emt_dpsim = read_timeseries_dpsim_real(r"data_j.csv")[0]
 current_emt_dpsim.values = -current_emt_dpsim.values
 
 # Comparison EMT
@@ -19,8 +19,8 @@ plt.ylabel('Strom [A]')
 plt.show(block=False)
 
 # Comparison DP
-current_dp_mod = read_timeseries_Modelica(r"\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\SynchronousGenerator\DP\UnitTest_Kundur_FullModel_Euler_1us.mat", ["synchronousGenerator_Park.I[1]"]) # Note: both results include only one damper winding in q axis
-current_dp_dpsim = read_timeseries_dpsim_cmpl(r"\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\SynchronousGenerator\DP\DPsim\UnitTest_FullModel_Trap_1us\data_j.csv")[0]
+current_dp_mod = read_timeseries_Modelica(r"UnitTest_Kundur_FullModel_Euler_1us.mat", ["synchronousGenerator_Park.I[1]"]) # Note: both results include only one damper winding in q axis
+current_dp_dpsim = read_timeseries_dpsim_cmpl(r"data_j.csv")[0]
 current_dp_dpsim.values = -current_dp_dpsim.values
 current_dpabs_dpsim = current_dp_dpsim.abs(current_dp_dpsim.name + ' abs')
 

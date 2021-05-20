@@ -1,7 +1,7 @@
 from dataprocessing.readtools import *
 from dataprocessing.timeseries import *
 
-path = 'C:\\Users\\mmi\\git\\PowerSystemSimulation\\DPsim\\VisualStudio\\DPsimVS2017\\'
+path = 'path'
 logName = 'lvector-cim';
 dataType = '.csv';
 logFilename = path + logName + dataType;

@@ -3,7 +3,7 @@
 import re
 from dataprocessing.readtools import *
 
-file = r"C:\Users\admin\Desktop\Load_read\Load_flow_WCSS.rlf"
+file = r"Load_flow_WCSS.rlf"
 
 # Example 1: Read in all variable
 print('************************ Test for read in all variable start ****************')

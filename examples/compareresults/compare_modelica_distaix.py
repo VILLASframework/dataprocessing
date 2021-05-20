@@ -6,10 +6,10 @@ import numpy as np
 
 # Comparison of P, Q and delta for 3rd order Synchronous Generator
 syngen_modelica_1us = read_timeseries_Modelica(
-    r"\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\SynchronousGenerator\DP\Modelica\SinglePhase\SMIB_3rdOrderModel_PmStep_ThetaVolt0_Euler_1us.mat",
+    r"SMIB_3rdOrderModel_PmStep_ThetaVolt0_Euler_1us.mat",
     timeseries_names=["synchronousGenerator_Park.P", "synchronousGenerator_Park.Q", "synchronousGenerator_Park.delta", "synchronousGenerator_Park.i.re", "synchronousGenerator_Park.i.im"])
 syngen_distaix = read_timeseries_dpsim_real(
-    r"\\tsclient\N\Research\German Public\ACS0050_Swarmgrid_tis\Data\WorkData\AP5\simulation-results\distaix_syngen_power_step\10ms\agent_3.csv",
+    r"agent_3.csv",
     timeseries_names=["P [W]", "Q [var]", "delta [rad]", "i.re [A]", "i.im [A]"])
 
 num_vars = 5

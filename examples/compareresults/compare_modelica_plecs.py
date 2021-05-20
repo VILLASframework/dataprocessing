@@ -3,7 +3,7 @@ from dataprocessing.plottools import *
 import matplotlib.pyplot as plt
 import numpy as np
 
-results_path = r'\\tsclient\N\Research\German Public\ACS0049_SINERGIEN_bsc\Data\WorkData\SimulationResults\InductionMachine\results'
+results_path = r'results'
 
 ### --- Read in section --- ###
 # Stator currents
