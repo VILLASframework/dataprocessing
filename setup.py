@@ -27,7 +27,7 @@ setup(
     version = '0.3.2',
     author = 'Markus Mirz, Jan Dinkelbach, Steffen Vogel',
     author_email = 'acs-software@eonerc.rwth-aachen.de',
-    description = 'Several tools for processing simulation results',
+    description = ' VILLASdataprocessing is a collection of Python utitlities to support post-processing of power system simulation results.',
     long_description_content_type='text/markdown',
     license = 'Apache-2.0',
     keywords = 'simulation power system real-time data processing',
