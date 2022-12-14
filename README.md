@@ -8,11 +8,10 @@
 
 This project is released under the terms of the [Apache 2.0](LICENSE).
 
-
 ## Contact
 
 - Markus Mirz <mmirz@eonerc.rwth-aachen.de>
 - Jan Dinkelbach <JDinkelbach@eonerc.rwth-aachen.de>
-- Steffen Vogel <stvogel@eonerc.rwth-aachen.de>
+- Steffen Vogel <post@steffenvogel.de>
 
 [Institute for Automation of Complex Power Systems (ACS)](http://www.acs.eonerc.rwth-aachen.de)
