@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "build"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -34,3 +34,15 @@ dependencies = [
 [project.urls]
 GitHub = 'https://github.com/VILLASframework/dataprocessing'
 Homepage = 'https://villas.fein-aachen.org'
+
+[[project.authors]]
+name = 'Markus Mirz'
+email = 'acs-software@eonerc.rwth-aachen.de'
+
+[[project.authors]]
+name = 'Jan Dinkelbach'
+email = 'acs-software@eonerc.rwth-aachen.de'
+
+[[project.authors]]
+name = 'Steffen Vogel'
+email = 'post@steffenvogel.de'
