@@ -1,3 +1,36 @@
+# SPDX-FileCopyrightText: 2017-2023, Institute for Automation of Complex Power Systems, EONERC, RWTH Aachen University
+# SPDX-License-Identifier: Apache-2.0
+
 [build-system]
-requires = ["setuptools", "wheel", "m2r"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = 'villas-dataprocessing'
+version = '0.3.2'
+description = ' VILLASdataprocessing is a collection of Python utitlities to support post-processing of power system simulation results.'
+readme = 'README.md'
+requires-python = '>=3.7'
+keywords = ['simulation', 'power', 'system', 'real-time', 'villas', 'data processing']
+license.text = 'Apache-2.0'
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Topic :: Scientific/Engineering',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: Python :: 3',
+]
+dependencies = [
+    'matplotlib',
+    'numpy',
+    'pandas',
+    'scipy',
+    'requests',
+    'python-dateutil',
+]
+
+[project.urls]
+GitHub = 'https://github.com/VILLASframework/dataprocessing'
+Homepage = 'https://villas.fein-aachen.org'
