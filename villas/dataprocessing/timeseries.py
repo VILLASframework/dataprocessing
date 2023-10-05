@@ -20,18 +20,14 @@ class TimeSeries:
     def abs(self):
         """ Calculate absolute value of complex time series.
         """
-        abs_values = []
-        for value in self.values:
-            abs_values.append(np.abs(value))
+        abs_values = abs(self.values)
         ts_abs = TimeSeries(self.name+'_abs', self.time, abs_values)
         return ts_abs
 
     def phase(self):
         """ Calculate phase of complex time series.
         """
-        phase_values = []
-        for value in self.values:
-            phase_values.append(np.angle(value, deg=True))
+        phase_values = np.angle(self.values, deg=True)
         ts_phase = TimeSeries(self.name+'_phase', self.time, phase_values)
         return ts_phase
 
